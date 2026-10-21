@@ -95,7 +95,7 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
       const angle = i * 2.399963;
       const t = active ? Math.min(1, cutProgress.current * 1.35) : 0;
       piece.visible = active;
-      piece.position.set(Math.cos(angle) * (0.25 + t * (0.7 + (i % 4) * .12)), .92 + t * (0.35 + (i % 5) * .11), Math.sin(angle) * (0.25 + t * (0.7 + (i % 3) * .14));
+      piece.position.set(Math.cos(angle) * (0.25 + t * (0.7 + (i % 4) * .12)), .92 + t * (0.35 + (i % 5) * .11), Math.sin(angle) * (0.25 + t * (0.7 + (i % 3) * .14)));
       piece.rotation.set(t * (i + 1), t * (i + 2), t * (i + 3));
     });
     slice.current.position.lerp(new THREE.Vector3(sliceServed ? 1.15 : 0, sliceServed ? -.11 : 0, sliceServed ? -1.65 : 0), speed);
