@@ -29,9 +29,9 @@ function IcingWriting() {
     const canvas = document.createElement('canvas'); canvas.width = 1024; canvas.height = 512;
     const c = canvas.getContext('2d'); c.textAlign = 'center'; c.textBaseline = 'middle';
     c.shadowColor = '#77524080'; c.shadowBlur = 3; c.shadowOffsetY = 3;
-    c.fillStyle = '#76515f'; c.font = 'italic 72px Georgia';
+    c.fillStyle = '#76515f'; c.font = 'italic 100px Georgia';
     c.fillText('Someone I love', 512, 158); c.fillText('was born today', 512, 256);
-    c.fillStyle = '#aa7183'; c.font = '48px Georgia'; c.fillText('♥', 512, 356);
+    c.fillStyle = '#aa7183'; c.font = '64px Georgia'; c.fillText('♥', 512, 356);
     const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
@@ -82,20 +82,12 @@ function Candle({ blownOut, reduced }) {
   </>;
 }
 export default function CakeScene({ blownOut, sliceServed, reduced }) {
-  const slice = useRef(); const plate = useRef(); const confetti = useRef(); const bump = useFrostingTexture();
+  const slice = useRef(); const plate = useRef(); const bump = useFrostingTexture();
   const cutProgress = useRef(0);
   useFrame((_, dt) => {
     const speed = reduced ? 1 : 1 - Math.exp(-dt * 2.4);
     cutProgress.current = THREE.MathUtils.damp(cutProgress.current, sliceServed ? 1 : 0, reduced ? 12 : 2.8, dt);
 
-    confetti.current.children.forEach((piece, i) => {
-      const active = sliceServed;
-      const angle = i * 2.399963;
-      const t = active ? Math.min(1, cutProgress.current * 1.35) : 0;
-      piece.visible = active;
-      piece.position.set(Math.cos(angle) * (0.25 + t * (0.7 + (i % 4) * .12)), .92 + t * (0.35 + (i % 5) * .11), Math.sin(angle) * (0.25 + t * (0.7 + (i % 3) * .14)));
-      piece.rotation.set(t * (i + 1), t * (i + 2), t * (i + 3));
-    });
     slice.current.position.lerp(new THREE.Vector3(sliceServed ? 1.15 : 0, sliceServed ? -.11 : 0, sliceServed ? -1.65 : 0), speed);
     plate.current.scale.lerp(new THREE.Vector3(...(sliceServed ? [1, 1, 1] : [.001, .001, .001])), speed);
   });
@@ -106,7 +98,6 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
     <CakeSection start={END} end={START + TAU} bump={bump} />
     <group ref={slice}><CakeSection start={START} end={END} bump={bump} /></group>
     <group rotation={[0, Math.PI, 0]}><IcingWriting /><Candle blownOut={blownOut} reduced={reduced} /></group>
-    <group ref={confetti}>{Array.from({ length: 28 }, (_, i) => <mesh key={i} visible={false} castShadow><sphereGeometry args={[.035 + (i % 3) * .009, 8, 8]} /><meshStandardMaterial color={["#f2c66d", "#e88ba5", "#a58bdf", "#8ed6c0", "#f6eadd"][i % 5]} roughness={.45} /></mesh>)}</group>
     <mesh ref={plate} position={[1.62, -.29, -2.28]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
   </group>;
 }
