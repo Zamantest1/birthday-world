@@ -3,15 +3,27 @@ import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Replace each path here when the user's photos are supplied. Keep each slot independent.
+export const magazinePhotoSlots = {
+  cover: '/images/keepsake.png',
+  introduction: '/images/keepsake.png',
+  littleThings: '/images/keepsake.png',
+  birthdayDay: '/images/keepsake.png',
+  reminder: '/images/keepsake.png',
+  memories: '/images/keepsake.png',
+  wishes: '/images/keepsake.png',
+  finale: '/images/keepsake.png',
+};
+
 export const spreads = [
-  { label: 'THE COVER', title: 'Birthday girl', caption: 'The special birthday issue.', lines: ['A whole universe,', 'in one extraordinary', 'person.'], note: 'The special birthday issue.', end: 'Made only for you.', photo: '/images/keepsake.png' },
-  { label: '01 / A LITTLE INTRODUCTION', title: 'The prettiest kind of magic', caption: 'A beautiful little life.', lines: ['Some people make a room', 'brighter just by being', 'in it. You have that light.'], note: 'A little reminder', end: 'of how lovely you are.', photo: '/images/keepsake.png' },
-  { label: '02 / THE LITTLE THINGS', title: 'Things that make you, you', caption: 'Your tiny habits.', lines: ['Your expressions. The way', 'you care. The things you', 'never notice about yourself.'], note: 'It is the little things', end: 'that become the biggest memories.', photo: '/images/keepsake.png' },
-  { label: '03 / YOUR KIND OF DAY', title: 'A day worth celebrating', caption: 'A little more golden.', lines: ['Today is not just another', 'date on the calendar. It is', 'the day the world got you.'], note: 'More laughter, more adventures,', end: 'more moments to keep.', photo: '/images/keepsake.png' },
-  { label: '04 / A NOTE FOR YOU', title: 'If you ever forget', caption: 'For you. Always.', lines: ['You are appreciated more', 'than you know. You deserve', 'gentleness and joy.'], note: 'Keep this page for the days', end: 'you need a little reminder.', photo: '/images/keepsake.png' },
-  { label: '05 / THE MEMORIES', title: 'Little moments, big meaning', caption: 'A collection of little moments.', lines: ['The ordinary days become', 'the stories we return to,', 'again and again.'], note: 'May you collect more', end: 'moments that feel like sunshine.', photo: '/images/keepsake.png' },
-  { label: '06 / A WISH FOR YOU', title: 'Everything good, finding you', caption: 'A wish for the year ahead.', lines: ['May this year be gentle,', 'full of brave beginnings,', 'warm hugs and happy surprises.'], note: 'More reasons to smile,', end: 'and people who make you feel loved.', photo: '/images/keepsake.png' },
-  { label: 'THE END', title: 'And the story goes on', caption: 'Another lovely beginning.', lines: ['In a world of temporary', 'things, some people become', 'a favourite part of the story.'], note: 'This is not the end.', end: 'It is another lovely beginning.', photo: '/images/keepsake.png' },
+  { label: 'THE COVER', title: 'Birthday girl', caption: 'The special birthday issue.', lines: ['A whole universe,', 'in one extraordinary', 'person.'], note: 'The special birthday issue.', end: 'Made only for you.', photo: magazinePhotoSlots.cover },
+  { label: '01 / A LITTLE INTRODUCTION', title: 'The prettiest kind of magic', caption: 'A beautiful little life.', lines: ['Some people make a room', 'brighter just by being', 'in it. You have that light.'], note: 'A little reminder', end: 'of how lovely you are.', photo: magazinePhotoSlots.introduction },
+  { label: '02 / THE LITTLE THINGS', title: 'Things that make you, you', caption: 'Your tiny habits.', lines: ['Your expressions. The way', 'you care. The things you', 'never notice about yourself.'], note: 'It is the little things', end: 'that become the biggest memories.', photo: magazinePhotoSlots.littleThings },
+  { label: '03 / YOUR KIND OF DAY', title: 'A day worth celebrating', caption: 'A little more golden.', lines: ['Today is not just another', 'date on the calendar. It is', 'the day the world got you.'], note: 'More laughter, more adventures,', end: 'more moments to keep.', photo: magazinePhotoSlots.birthdayDay },
+  { label: '04 / A NOTE FOR YOU', title: 'If you ever forget', caption: 'For you. Always.', lines: ['You are appreciated more', 'than you know. You deserve', 'gentleness and joy.'], note: 'Keep this page for the days', end: 'you need a little reminder.', photo: magazinePhotoSlots.reminder },
+  { label: '05 / THE MEMORIES', title: 'Little moments, big meaning', caption: 'A collection of little moments.', lines: ['The ordinary days become', 'the stories we return to,', 'again and again.'], note: 'May you collect more', end: 'moments that feel like sunshine.', photo: magazinePhotoSlots.memories },
+  { label: '06 / A WISH FOR YOU', title: 'Everything good, finding you', caption: 'A wish for the year ahead.', lines: ['May this year be gentle,', 'full of brave beginnings,', 'warm hugs and happy surprises.'], note: 'More reasons to smile,', end: 'and people who make you feel loved.', photo: magazinePhotoSlots.wishes },
+  { label: 'THE END', title: 'And the story goes on', caption: 'Another lovely beginning.', lines: ['In a world of temporary', 'things, some people become', 'a favourite part of the story.'], note: 'This is not the end.', end: 'It is another lovely beginning.', photo: magazinePhotoSlots.finale },
 ];
 function makePage(page, left, image) {
   const canvas = document.createElement('canvas'); canvas.width = 768; canvas.height = 1024;
@@ -65,8 +77,9 @@ function TurningPage({ from, to, textures, onDone, reduced }) {
   </group>;
 }
 export default function MagazineScene({ page, turn, onTurnDone, reduced }) {
-  const image = useTexture(spreads[page].photo);
-  const textures = useMemo(() => spreads.map((_, i) => [makePage(i, true, image.image), makePage(i, false, image.image)]), [image]);
+  const photoPaths = useMemo(() => spreads.map(spread => spread.photo), []);
+  const images = useTexture(photoPaths);
+  const textures = useMemo(() => spreads.map((_, i) => [makePage(i, true, images[i]?.image || images[0].image), makePage(i, false, images[i]?.image || images[0].image)]), [images]);
   useEffect(() => () => textures.flat().forEach(t => t.dispose()), [textures]);
   const leftPage = turn ? (turn.to < turn.from ? turn.to : turn.from) : page;
   const rightPage = turn ? (turn.to > turn.from ? turn.to : turn.from) : page;
