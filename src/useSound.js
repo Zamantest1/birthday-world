@@ -42,8 +42,8 @@ export function useSound(scene) {
     } catch { /* Audio is optional when a browser does not expose Web Audio. */ }
   }, [tone]);
   const effect = useCallback((kind) => {
-    const sequences = { enter: [261.63, 392, 523.25], transition: [329.63, 392], blow: [196, 130.81], serve: [392, 523.25], page: [880, 659.25], gift: [261.63, 329.63, 392, 523.25, 783.99] };
-    (sequences[kind] || sequences.transition).forEach((f, i) => tone(f, kind === 'page' ? .2 : 2.6, kind === 'page' ? .012 : .035, i * .18));
+    const sequences = { enter: [261.63, 392, 523.25], transition: [329.63, 392], blow: [196, 130.81], cut: [180, 145, 110], serve: [392, 523.25], page: [880, 659.25], gift: [261.63, 329.63, 392, 523.25, 783.99] };
+    (sequences[kind] || sequences.transition).forEach((f, i) => tone(f, kind === 'page' ? .2 : kind === 'cut' ? .45 : 2.6, kind === 'page' ? .012 : kind === 'cut' ? .018 : .035, i * (kind === 'cut' ? .08 : .18)));
   }, [tone]);
   useEffect(() => { chapter.current = scene; }, [scene]);
   const toggle = () => {
