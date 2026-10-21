@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { ContactShadows, Environment, Lightformer } from '@react-three/drei';
+import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import HeroScene from './HeroScene.jsx';
 import CakeScene from './CakeScene.jsx';
@@ -37,6 +37,7 @@ function CameraRig({ state, reduced }) {
   }, [state.scene]);
 
   useFrame((three, dt) => {
+    if (state.scene === 1) return;
     const shot = shotFor(state);
     const aspect = size.width / size.height;
     const fit = aspect < 1 ? THREE.MathUtils.clamp(shot.k / Math.max(aspect, .42) * .5, 1, shot.k) : aspect < 1.25 ? 1.15 : 1;
@@ -89,6 +90,7 @@ export default function World({ state, reduced, mobile, onTurnDone }) {
   return <>
     <Background scene={scene} />
     <CameraRig state={state} reduced={reduced} />
+    <OrbitControls makeDefault enabled={scene === 1} enablePan={false} enableDamping dampingFactor={0.085} rotateSpeed={mobile ? 0.8 : 0.65} zoomSpeed={0.7} minDistance={3.6} maxDistance={8} minPolarAngle={Math.PI / 3.4} maxPolarAngle={Math.PI * 0.78} />
     <ambientLight intensity={.18} color="#dccfe8" />
     <Environment resolution={128} frames={1}>
       <Lightformer form="rect" intensity={1.4} color="#f6f0e8" position={[3, 4, 3]} scale={[4, 2, 1]} />
