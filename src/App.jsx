@@ -122,12 +122,15 @@ export default function App() {
   const extinguish = useCallback(() => { setCandleOut(true); sound.effect('blow'); }, [sound]);
   const mic = useBirthdayMicrophone(extinguish, scene === 1 && !candleOut);
 
+  const chapterComplete = scene === 0 || (scene === 1 && sliceServed) || (scene === 2 && page === spreads.length - 1) || (scene === 3 && giftOpen);
+
   const goTo = useCallback((next) => {
     if (busy.current || next < 0 || next > 3 || next === scene) return;
+    if (next > scene && !chapterComplete) return;
     busy.current = true; sound.start(); sound.effect(next === 1 && scene === 0 ? 'enter' : 'transition');
     setVeil(true);
     setTimeout(() => { setScene(next); setTurn(null); setVeil(false); busy.current = false; }, reduced ? 150 : 900);
-  }, [scene, sound, reduced]);
+  }, [scene, sound, reduced, chapterComplete]);
 
   const turnPage = useCallback((dir) => {
     if (turn) return;
@@ -194,7 +197,7 @@ export default function App() {
     </section>
 
     {scene > 0 && <button className="nav-btn back" onClick={() => goTo(scene - 1)}><ArrowLeft size={15} aria-hidden="true" /><span>Back</span></button>}
-    {scene > 0 && scene < 3 && <button className="nav-btn next" onClick={() => goTo(scene + 1)}><span>Next chapter</span><ArrowRight size={15} aria-hidden="true" /></button>}
+    {scene > 0 && scene < 3 && <button className="nav-btn next" disabled={!chapterComplete} onClick={() => goTo(scene + 1)}><span>Next chapter</span><ArrowRight size={15} aria-hidden="true" /></button>}
 
     <AnimatePresence>{veil && <motion.div className="veil" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? .1 : .7, ease }} />}</AnimatePresence>
     <Loader />
