@@ -82,9 +82,14 @@ function Candle({ blownOut, reduced }) {
   </>;
 }
 export default function CakeScene({ blownOut, sliceServed, reduced }) {
-  const slice = useRef(); const plate = useRef(); const bump = useFrostingTexture();
+  const slice = useRef(); const plate = useRef(); const knife = useRef(); const bump = useFrostingTexture();
+  const cutProgress = useRef(0);
   useFrame((_, dt) => {
     const speed = reduced ? 1 : 1 - Math.exp(-dt * 2.4);
+    cutProgress.current = THREE.MathUtils.damp(cutProgress.current, sliceServed ? 1 : 0, reduced ? 12 : 2.8, dt);
+    knife.current.position.y = 1.15 - Math.sin(cutProgress.current * Math.PI) * .55;
+    knife.current.rotation.z = -.12 - cutProgress.current * .75;
+    knife.current.position.x = .72 + cutProgress.current * .16;
     slice.current.position.lerp(new THREE.Vector3(sliceServed ? 1.15 : 0, sliceServed ? -.11 : 0, sliceServed ? -1.65 : 0), speed);
     plate.current.scale.lerp(new THREE.Vector3(...(sliceServed ? [1, 1, 1] : [.001, .001, .001])), speed);
   });
@@ -95,6 +100,20 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
     <CakeSection start={END} end={START + TAU} bump={bump} />
     <group ref={slice}><CakeSection start={START} end={END} bump={bump} /></group>
     <group rotation={[0, Math.PI, 0]}><IcingWriting /><Candle blownOut={blownOut} reduced={reduced} /></group>
+    <group ref={knife} position={[.72, 1.15, .85]} rotation={[0, 0, -.12]}>
+      <mesh position={[0, .24, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <boxGeometry args={[.72, .055, .018]} />
+        <meshStandardMaterial color="#cfd4dc" metalness={.92} roughness={.22} />
+      </mesh>
+      <mesh position={[-.46, .24, 0]} castShadow>
+        <boxGeometry args={[.3, .085, .075]} />
+        <meshStandardMaterial color="#65404b" metalness={.12} roughness={.48} />
+      </mesh>
+      <mesh position={[.34, .24, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <coneGeometry args={[.035, .13, 4]} />
+        <meshStandardMaterial color="#dce1e8" metalness={.9} roughness={.2} />
+      </mesh>
+    </group>
     <mesh ref={plate} position={[1.62, -.29, -2.28]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
   </group>;
 }
