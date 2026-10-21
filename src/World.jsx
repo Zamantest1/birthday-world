@@ -8,7 +8,7 @@ import MagazineScene from './MagazineScene.jsx';
 import GiftScene from './GiftScene.jsx';
 import { Glow, Motes, ParticleField } from './three-utils.jsx';
 
-const BACKGROUNDS = ['#1b111a', '#291824', '#21131d', '#1c1018'];
+const BACKGROUNDS = ['#20152b', '#2c1b35', '#241731', '#21152d'];
 
 function shotFor({ scene, candleOut, sliceServed, turn, giftOpen }) {
   if (scene === 0) return { pos: [0, 0, 7.4], look: [0, 0, 0], k: 1.25 };
@@ -17,7 +17,7 @@ function shotFor({ scene, candleOut, sliceServed, turn, giftOpen }) {
     return candleOut ? { pos: [1.5, 2.15, 4.9], look: [0, .45, 0], k: 1.7 } : { pos: [2.1, 2.45, 5.4], look: [0, .45, 0], k: 1.7 };
   }
   if (scene === 2) return turn ? { pos: [0, 1.85, 4.15], look: [0, .05, 0], k: 1.95 } : { pos: [0, 1.7, 4.3], look: [0, 0, 0], k: 1.95 };
-  return giftOpen ? { pos: [.3, 2.2, 5.6], look: [0, 1.15, 0], k: 1.65 } : { pos: [.6, 1.5, 5.4], look: [0, .35, 0], k: 1.6 };
+  return giftOpen ? { pos: [0, 1.9, 4.7], look: [0, 1.3, 0], k: 1.35 } : { pos: [.6, 1.5, 5.4], look: [0, .35, 0], k: 1.6 };
 }
 
 function CameraRig({ state, reduced }) {
@@ -45,8 +45,8 @@ function CameraRig({ state, reduced }) {
     target.current.set(...shot.pos).sub(lookTarget.current).multiplyScalar(fit).add(lookTarget.current);
     if (!reduced) {
       const t = three.clock.elapsedTime;
-      target.current.x += three.pointer.x * .32 + Math.sin(t * .21) * .08;
-      target.current.y += three.pointer.y * .18 + Math.sin(t * .17) * .05;
+      target.current.x += three.pointer.x * .22 + Math.sin(t * .21) * .07;
+      target.current.y += three.pointer.y * .13 + Math.sin(t * .17) * .04;
     }
     const speed = reduced ? 8 : 1.6;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, target.current.x, speed, dt);

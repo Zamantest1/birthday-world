@@ -7,7 +7,7 @@ import { Glow, Motes, ParticleField } from './three-utils.jsx';
 const W = 1.3; const H = 1; const T = .04;
 const smooth = (a, b, x) => { const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
-function Velvet(props) { return <meshPhysicalMaterial color="#754052" roughness={.85} sheen={1} sheenRoughness={.45} sheenColor="#dcb3c6" {...props} />; }
+function Velvet(props) { return <meshPhysicalMaterial color="#6b4a7e" roughness={.85} sheen={1} sheenRoughness={.45} sheenColor="#c9b0e8" {...props} />; }
 function Satin(props) { return <meshPhysicalMaterial color="#e2c486" roughness={.32} metalness={.35} clearcoat={.6} clearcoatRoughness={.3} {...props} />; }
 
 function Bow({ bowRef }) {
@@ -18,82 +18,94 @@ function Bow({ bowRef }) {
   </group>;
 }
 
-const LETTER_COPY = {
-  heading: 'A Little Letter for You',
+export const LETTER_COPY = {
+  heading: 'Dear Amina,',
   paragraphs: [
-    'You are my favourite kind of wonderful.',
-    'Today, tomorrow, and all the days after, I hope life brings you little moments of happiness, reasons to smile, and memories worth keeping.',
-    'May this new chapter of your life be filled with warmth, beautiful surprises, peaceful days, and everything your heart has been wishing for.',
-    'You deserve to feel loved, appreciated, and celebrated, not just today, but every day.',
-    'No matter where life takes you, I hope you always remember how special you are.',
+    'Happy Birthday.',
+    'More than six years is a long time to share with someone. We have lived through so many moments—some bright and easy, others quiet and heavy. There were times when the road felt uncertain, and times when we were not sure where we stood. Yet somehow, through all of it, we kept finding our way back to each other.',
+    'Whatever choices come next, and wherever our paths may lead, I want you to know how deeply grateful I am for the time we have shared. You have given this part of my life meaning, warmth, and memories that I will always hold close.',
+    'I hope this year brings you peace, gentle days, and every opportunity to build the life you deserve. Never lose that kind heart, that cute little charm, or the fiery spark that makes you who you are.',
+    'Happy Birthday, Amina. I wish you nothing but the best, always.',
   ],
-  closing: 'With all my love, always.',
+  closing: 'With warmth, respect, and care, always.',
 };
 
 function Letter({ visible, reduced, mobile }) {
-  const group = useRef(); const paper = useRef();
+  const group = useRef();
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 1600;
     const c = canvas.getContext('2d');
     const grad = c.createLinearGradient(0, 0, 1200, 1600);
-    grad.addColorStop(0, '#fffaf4'); grad.addColorStop(.55, '#fff5ee'); grad.addColorStop(1, '#f4dfdf');
+    grad.addColorStop(0, '#fbf7ff'); grad.addColorStop(.55, '#fff9f5'); grad.addColorStop(1, '#f5e9f8');
     c.fillStyle = grad; c.fillRect(0, 0, 1200, 1600);
     for (let i = 0; i < 4200; i++) { c.fillStyle = `rgba(117,64,82,${(i % 4) * .009})`; c.fillRect((i * 71) % 1200, (i * 137) % 1600, 2, 2); }
     c.strokeStyle = '#d99ab1'; c.lineWidth = 6; c.strokeRect(48, 48, 1104, 1504);
     c.strokeStyle = '#ead0d4'; c.lineWidth = 2; c.strokeRect(68, 68, 1064, 1464);
-    c.textAlign = 'center'; c.fillStyle = '#c27d96'; c.font = '58px Georgia'; c.fillText('♡', 600, 145);
-    c.fillStyle = '#754052'; c.font = 'italic 59px Georgia'; c.fillText(LETTER_COPY.heading, 600, 235);
-    c.fillStyle = '#553142'; c.font = '32px Georgia';
+    c.textAlign = 'center'; c.fillStyle = '#9b7cc4'; c.font = '60px Georgia'; c.fillText('♡', 600, 155);
+    c.fillStyle = '#6b4a7e'; c.font = 'italic 58px Georgia'; c.fillText(LETTER_COPY.heading, 600, 245);
+    c.fillStyle = '#4a3060'; c.font = '34px Georgia';
     const wrap = (text, maxWidth) => {
-      const words = text.split(/\\s+/); const lines = []; let line = '';
+      const words = text.split(/\s+/); const lines = []; let line = '';
       for (const word of words) {
         const test = line ? line + ' ' + word : word;
         if (c.measureText(test).width > maxWidth && line) { lines.push(line); line = word; } else line = test;
       }
       if (line) lines.push(line); return lines;
     };
-    let y = 355;
+    let y = 370;
     for (const paragraph of LETTER_COPY.paragraphs) {
-      const lines = wrap(paragraph, 820);
-      for (const line of lines) { c.fillText(line, 600, y); y += 43; }
-      y += 22;
+      const lines = wrap(paragraph, 840);
+      for (const line of lines) { c.fillText(line, 600, y); y += 45; }
+      y += 24;
     }
-    c.fillStyle = '#c27d96'; c.fillRect(520, y + 2, 160, 3); y += 64;
-    c.fillStyle = '#754052'; c.font = 'italic 36px Georgia';
-    c.fillText(LETTER_COPY.closing, 600, Math.min(y + 8, 1460));
-    c.fillStyle = '#b98a9d'; c.font = '30px Georgia'; c.fillText('♡', 600, 1490);
+    c.fillStyle = '#c27d96'; c.fillRect(520, y + 6, 160, 3); y += 64;
+    c.fillStyle = '#6b4a7e'; c.font = 'italic 38px Georgia';
+    c.fillText(LETTER_COPY.closing, 600, Math.min(y + 12, 1450));
+    c.fillStyle = '#b98a9d'; c.font = '32px Georgia';
+    c.fillText('♡', 600, 1485);
     const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
+
   useFrame((state, dt) => {
+    if (!group.current) return;
     const current = group.current.userData.progress ?? 0;
-    const next = THREE.MathUtils.damp(current, visible ? 1 : 0, reduced ? 12 : 1.6, dt);
+    const next = THREE.MathUtils.damp(current, visible ? 1 : 0, reduced ? 12 : 1.4, dt);
     group.current.userData.progress = next;
-    group.current.visible = next > .005;
-    // Rise from the box cavity, unfold, and settle just above the open box.
-    group.current.position.y = .12 + next * (mobile ? 1.12 : 1.42);
-    group.current.position.z = .34 + next * .52;
-    group.current.rotation.x = -.28 - (1 - smooth(0, .9, next)) * .62;
-    group.current.rotation.y = Math.sin(state.clock.elapsedTime * .35) * .008;
-    group.current.scale.setScalar(.08 + next * (mobile ? .62 : .82));
-    paper.current.material.opacity = Math.min(1, next * 2.2);
+
+    const rise = smooth(0.25, 0.95, next);
+    group.current.visible = rise > 0.001;
+    if (rise <= 0.001) return;
+
+    const targetY = mobile ? 2.05 : 1.82;
+    const targetZ = mobile ? 1.65 : 1.50;
+    const targetScale = mobile ? 0.82 : 0.90;
+
+    group.current.position.y = 0.20 + rise * (targetY - 0.20);
+    group.current.position.z = 0.15 + rise * (targetZ - 0.15);
+    group.current.rotation.x = -0.68 + rise * 0.54;
+    group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.35) * 0.008;
+    group.current.scale.setScalar(0.25 + rise * (targetScale - 0.25));
   });
-  return <group ref={group} position={[0, .12, .34]} visible={false}>
-    <mesh ref={paper} position={[0, 0, 0]} castShadow receiveShadow>
-      <planeGeometry args={[2.05, 2.72, 1, 1]} />
-      <meshStandardMaterial map={texture} transparent opacity={0} side={THREE.DoubleSide} roughness={.92} metalness={0} polygonOffset polygonOffsetFactor={-1} />
-    </mesh>
-    <mesh position={[0, 0, -.018]} castShadow receiveShadow>
-      <boxGeometry args={[2.05, 2.72, .035]} />
-      <meshStandardMaterial color="#e4c6c9" roughness={.94} />
-    </mesh>
-oup>
-  </group>;
+
+  return (
+    <group ref={group} position={[0, 0.18, 0.12]} visible={false}>
+      <mesh position={[0, 0, 0.013]} castShadow receiveShadow>
+        <planeGeometry args={[2.04, 2.72]} />
+        <meshStandardMaterial map={texture} roughness={0.92} metalness={0} />
+      </mesh>
+      <mesh position={[0, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[2.08, 2.76, 0.024]} />
+        <meshStandardMaterial color="#f0dce6" roughness={0.92} />
+      </mesh>
+    </group>
+  );
 }
 
 export default function GiftScene({ open, reduced, mobile }) {
   const box = useRef(); const lid = useRef(); const bow = useRef(); const light = useRef(); const glow = useRef(); const progress = useRef(0);
   useFrame((state, dt) => {
+    if (!box.current || !lid.current || !bow.current || !light.current || !glow.current) return;
     progress.current = open ? Math.min(1, progress.current + dt / (reduced ? .3 : 3.2)) : Math.max(0, progress.current - dt / 1.2);
     const p = progress.current; const t = state.clock.elapsedTime;
     box.current.position.y = reduced ? 0 : Math.sin(t * .9) * .025;
@@ -113,7 +125,7 @@ export default function GiftScene({ open, reduced, mobile }) {
     <Glow color="#8e526d" scale={8} opacity={.6} position={[0, 1.2, -2.5]} />
     <ParticleField count={mobile ? 120 : 260} inner={1.8} outer={8} size={.06} color="#f0a9bf" opacity={.65} drift={reduced ? 0 : .015} seed={11} />
 
-    <mesh position={[0, -.3, 0]} castShadow receiveShadow><cylinderGeometry args={[1.35, 1.45, .6, 96]} /><meshPhysicalMaterial color="#553142" roughness={.8} sheen={1} sheenColor="#8f74ad" /></mesh>
+    <mesh position={[0, -.3, 0]} castShadow receiveShadow><cylinderGeometry args={[1.35, 1.45, .6, 96]} /><meshPhysicalMaterial color="#4f3358" roughness={.8} sheen={1} sheenColor="#8f74ad" /></mesh>
     <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.35, .018, 10, 128]} /><meshStandardMaterial color="#d8b56d" metalness={.9} roughness={.25} /></mesh>
     <mesh position={[0, -.6, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.45, .014, 10, 128]} /><meshStandardMaterial color="#d8b56d" metalness={.9} roughness={.3} /></mesh>
     <ContactShadows position={[0, -.6, 0]} scale={7} blur={2.6} opacity={.7} far={2} color="#08050c" />

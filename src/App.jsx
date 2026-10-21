@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 import * as THREE from 'three';
 import World from './World.jsx';
 import { spreads } from './MagazineScene.jsx';
+import { LETTER_COPY } from './GiftScene.jsx';
 import { useSound } from './useSound.js';
 
 const CHAPTERS = ['Enter', 'The cake', 'The keepsake', 'The gift'];
@@ -34,8 +35,8 @@ function HeroCopy({ onEnter }) {
   return <div className="hero-copy">
     <motion.p className="kicker" {...reveal(.5)}>A birthday, made by hand</motion.p>
     <h1>
-      <motion.span {...reveal(.8)}>Someone special</motion.span>
-      <motion.span {...reveal(1.05)}>was <em>born today.</em></motion.span>
+      <motion.span {...reveal(.8)}>Today,</motion.span>
+      <motion.span {...reveal(1.05)}>someone special <em>was born.</em></motion.span>
     </h1>
     <motion.p className="lede" {...reveal(1.5)}>So I made you a tiny universe.<br />Take your time. Every little thing is for you.</motion.p>
     <motion.button className="cta" onClick={onEnter} {...reveal(2.1)} whileHover={{ y: -2 }} whileTap={{ scale: .97 }}>
@@ -53,12 +54,11 @@ function CakeCopy({ candleOut, sliceServed, onExtinguish, onServe }) {
     <div className="action-dock">
       <AnimatePresence mode="wait">
         {!candleOut && <motion.div key="wish" className="dock-inner" {...reveal(.6)}>
-          <p className="hint">Close your eyes, make a wish, then let the candle glow out.</p>
           <button className="cta" onClick={onExtinguish}><span>Make a Wish</span></button>
         </motion.div>}
         {candleOut && !sliceServed && <motion.div key="serve" className="dock-inner" {...reveal(.9)}>
-          <p className="celebrate">Wish made. <span>Keep it close.</span></p>
-          <button className="cta" onClick={onServe}><span>Serve the birthday slice</span></button>
+          <p className="celebrate">Wish made.</p>
+          <button className="cta" onClick={onServe}><span>Cut & serve the birthday slice</span></button>
         </motion.div>}
         {sliceServed && <motion.div key="served" className="dock-inner" {...reveal(1.4)}>
           <p className="celebrate large">Birthday rule:<br /><em>the first slice is always yours.</em></p>
@@ -75,26 +75,73 @@ function MagazineCopy({ page, turning, onTurn }) {
       <h2><AnimatePresence mode="wait"><motion.em key={page} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .5 }}>{spreads[page].title}</motion.em></AnimatePresence></h2>
     </motion.div>
     <div className="action-dock">
-      <motion.div className="page-controls" {...reveal(.7)}>
-        <button onClick={() => onTurn(-1)} disabled={page === 0 || turning} aria-label="Previous page"><ArrowLeft size={18} /></button>
-        <span>{String(page + 1).padStart(2, '0')} <i>/</i> {String(spreads.length).padStart(2, '0')}</span>
-        <button onClick={() => onTurn(1)} disabled={page === spreads.length - 1 || turning} aria-label="Next page"><ArrowRight size={18} /></button>
-      </motion.div>
-      <motion.p className="hint" {...reveal(.9)}>Swipe, use the arrows, or your keyboard.</motion.p>
+      <div className="dock-inner">
+        <motion.div className="page-controls" {...reveal(.7)}>
+          <button onClick={() => onTurn(-1)} disabled={page === 0 || turning} aria-label="Previous page"><ArrowLeft size={18} /></button>
+          <span>{String(page + 1).padStart(2, '0')} <i>/</i> {String(spreads.length).padStart(2, '0')}</span>
+          <button onClick={() => onTurn(1)} disabled={page === spreads.length - 1 || turning} aria-label="Next page"><ArrowRight size={18} /></button>
+        </motion.div>
+      </div>
     </div>
   </>;
 }
 
-function GiftCopy({ open, onOpen }) {
+function LetterModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  return (
+    <AnimatePresence>
+      <motion.div className="letter-modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+        <motion.div className="letter-modal-card" initial={{ scale: 0.92, y: 20, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()}>
+          <button className="letter-modal-close" onClick={onClose} aria-label="Close letter">✕</button>
+          <span className="letter-modal-heart">♡</span>
+          <h3 className="letter-modal-heading">{LETTER_COPY.heading}</h3>
+          <div className="letter-modal-body">
+            {LETTER_COPY.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+          <div className="letter-modal-divider" />
+          <p className="letter-modal-closing">{LETTER_COPY.closing}</p>
+          <span className="letter-modal-heart small">♡</span>
+          <div className="letter-modal-footer">
+            <button className="letter-modal-dismiss-btn" onClick={onClose}>
+              <span>Close & Return to World</span>
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function GiftCopy({ open, onOpen, onOpenLetter }) {
   return <>
-    <AnimatePresence>{!open && <motion.div className="chapter-head" {...reveal(.3)}>
-      <p className="kicker">Chapter 04</p>
-      <h2>One last <em>little thing.</em></h2>
-    </motion.div>}</AnimatePresence>
-    <div className="action-dock">
+    <AnimatePresence mode="wait">
+      {!open ? (
+        <motion.div key="head-initial" className="chapter-head" {...reveal(0.3)}>
+          <p className="kicker">Chapter 04</p>
+          <h2>One last <em>little thing.</em></h2>
+        </motion.div>
+      ) : (
+        <motion.div key="head-opened" className="chapter-head scene-4-opened" {...reveal(0.3)}>
+          <p className="kicker">Chapter 04</p>
+          <h2>Happy <em>Birthday.</em></h2>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    <div className={`action-dock ${open ? 'final-action-dock' : ''}`}>
       <AnimatePresence mode="wait">
-        {!open ? <motion.button key="open" className="cta" onClick={onOpen} {...reveal(.8)}><span>Open your gift</span></motion.button>
-          : <motion.p key="sig" className="signature" {...reveal(3.2)}>With all my love, always.</motion.p>}
+        {!open ? (
+          <motion.button key="open" className="cta" onClick={onOpen} {...reveal(0.8)}>
+            <span>Open your gift</span>
+          </motion.button>
+        ) : (
+          <motion.div key="sig" className="dock-inner final-dock-inner" {...reveal(0.3)}>
+            <button className="cta read-letter-btn" onClick={onOpenLetter}>
+              <span>Read Full Letter ✉</span>
+            </button>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   </>;
@@ -111,10 +158,16 @@ export default function App() {
   const [page, setPage] = useState(0);
   const [turn, setTurn] = useState(null);
   const [giftOpen, setGiftOpen] = useState(false);
+  const [letterModalOpen, setLetterModalOpen] = useState(false);
   const sound = useSound(scene);
   const busy = useRef(false);
+  const servingRef = useRef(false);
 
-  const extinguish = useCallback(() => { setCandleOut(true); sound.effect('blow'); }, [sound]);
+  const extinguish = useCallback(() => {
+    setCandleOut(true);
+    sound.effect('blow');
+    sound.start().then(() => { sound.birthdayTune(); }).catch(() => {});
+  }, [sound]);
 
   const chapterComplete = scene === 0 || (scene === 1 && sliceServed) || (scene === 2 && page === spreads.length - 1) || (scene === 3 && giftOpen);
 
@@ -164,6 +217,17 @@ export default function App() {
     if ((dir === 1 && page < spreads.length - 1) || (dir === -1 && page > 0)) turnPage(dir);
   };
 
+  const openLetter = useCallback(() => {
+    sound.start();
+    sound.effect('letter');
+    setLetterModalOpen(true);
+  }, [sound]);
+
+  const closeLetter = useCallback(() => {
+    sound.effect('paper');
+    setLetterModalOpen(false);
+  }, [sound]);
+
   const state = { scene, candleOut, sliceServed, page, turn, giftOpen };
 
   return <main className={`experience scene-${scene}`} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
@@ -192,17 +256,24 @@ export default function App() {
         <motion.div key={scene} className="overlay-scene" exit={{ opacity: 0 }} transition={{ duration: .4 }}>
           {scene === 0 && <HeroCopy onEnter={() => goTo(1)} />}
           {scene === 1 && <CakeCopy candleOut={candleOut} sliceServed={sliceServed} onExtinguish={extinguish}
-            onServe={() => { sound.effect('serve'); setSliceServed(true); }} />}
+            onServe={() => {
+              if (sliceServed || servingRef.current) return;
+              servingRef.current = true;
+              sound.effect('serve');
+              setSliceServed(true);
+            }} />}
           {scene === 2 && <MagazineCopy page={page} turning={!!turn} onTurn={turnPage} />}
-          {scene === 3 && <GiftCopy open={giftOpen} onOpen={() => { sound.start(); setGiftOpen(true); sound.effect('gift'); }} />}
+          {scene === 3 && <GiftCopy open={giftOpen} onOpen={() => { sound.start(); setGiftOpen(true); sound.effect('gift'); }} onOpenLetter={openLetter} />}
         </motion.div>
       </AnimatePresence>
     </section>
 
     {scene > 0 && <button className="nav-btn back" onClick={() => goTo(scene - 1)}><ArrowLeft size={15} aria-hidden="true" /><span>Back</span></button>}
     {scene > 0 && scene < 3 && <button className="nav-btn next" disabled={!chapterComplete} onClick={() => goTo(scene + 1)}><span>Next chapter</span><ArrowRight size={15} aria-hidden="true" /></button>}
+    {scene === 3 && giftOpen && <button className="nav-btn next replay-nav-btn" onClick={() => goTo(0)}><span>Replay ✦</span><ArrowRight size={15} aria-hidden="true" /></button>}
 
     <AnimatePresence>{veil && <motion.div className="veil" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? .1 : .7, ease }} />}</AnimatePresence>
+    <LetterModal isOpen={letterModalOpen} onClose={closeLetter} />
     <Loader />
   </main>;
 }

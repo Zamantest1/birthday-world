@@ -5,6 +5,7 @@ import * as THREE from 'three';
 const TAU = Math.PI * 2;
 const START = .28;
 const END = .94;
+const smooth = (a, b, x) => { const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 function sector(radius, height, start, end) {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
@@ -29,9 +30,9 @@ function IcingWriting() {
     const canvas = document.createElement('canvas'); canvas.width = 1024; canvas.height = 512;
     const c = canvas.getContext('2d'); c.textAlign = 'center'; c.textBaseline = 'middle';
     c.shadowColor = '#77524080'; c.shadowBlur = 3; c.shadowOffsetY = 3;
-    c.fillStyle = '#76515f'; c.font = 'italic 100px Georgia';
-    c.fillText('Someone I love', 512, 158); c.fillText('was born today', 512, 256);
-    c.fillStyle = '#aa7183'; c.font = '64px Georgia'; c.fillText('♥', 512, 356);
+    c.fillStyle = '#6b476e'; c.font = 'italic 78px Georgia';
+    c.fillText('Someone I love', 512, 195);
+    c.fillText('was born today ♥', 512, 305);
     const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
@@ -64,6 +65,7 @@ function CakeSection({ start, end, bump }) {
 function Candle({ blownOut, reduced }) {
   const flame = useRef(); const light = useRef(); const smoke = useRef(); const elapsed = useRef(0);
   useFrame((state, dt) => {
+    if (!flame.current || !light.current || !smoke.current) return;
     const t = state.clock.elapsedTime;
     elapsed.current = blownOut ? elapsed.current + dt : 0;
     const scale = blownOut ? Math.max(0, 1 - elapsed.current * 2) : 1;
@@ -85,11 +87,31 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
   const slice = useRef(); const plate = useRef(); const bump = useFrostingTexture();
   const cutProgress = useRef(0);
   useFrame((_, dt) => {
-    const speed = reduced ? 1 : 1 - Math.exp(-dt * 2.4);
-    cutProgress.current = THREE.MathUtils.damp(cutProgress.current, sliceServed ? 1 : 0, reduced ? 12 : 2.8, dt);
+    if (!slice.current || !plate.current) return;
+    cutProgress.current = THREE.MathUtils.damp(cutProgress.current, sliceServed ? 1 : 0, reduced ? 14 : 2.0, dt);
+    const p = cutProgress.current;
 
-    slice.current.position.lerp(new THREE.Vector3(sliceServed ? 1.15 : 0, sliceServed ? -.11 : 0, sliceServed ? -1.65 : 0), speed);
-    plate.current.scale.lerp(new THREE.Vector3(...(sliceServed ? [1, 1, 1] : [.001, .001, .001])), speed);
+    // Slice center angle = 0.61 rad (~35 deg)
+    const ux = 0.5728;
+    const uz = -0.8196;
+    const targetX = 1.25;
+    const targetZ = -1.78;
+
+    // Phase 1 (0 -> 0.28): Distinct radial separation cut from the cake
+    const sepDist = smooth(0, 0.28, p) * 0.35;
+    // Phase 2 (0.22 -> 1.0): Graceful lift arc and glide onto the plate
+    const glide = smooth(0.22, 1.0, p);
+    const arcY = Math.sin(glide * Math.PI) * 0.16;
+
+    const posX = ux * sepDist + (targetX - ux * 0.35) * glide;
+    const posZ = uz * sepDist + (targetZ - uz * 0.35) * glide;
+    const posY = -0.065 * glide + arcY;
+
+    slice.current.position.set(posX, posY, posZ);
+
+    // Plate scales in as the slice approaches
+    const plateScale = smooth(0.18, 0.72, p);
+    plate.current.scale.setScalar(Math.max(0.001, plateScale));
   });
   return <group rotation={[0, Math.PI, 0]} position={[0, -.35, 0]}>
     <mesh position={[0, -.24, 0]} castShadow receiveShadow><cylinderGeometry args={[1.7, 1.68, .12, 96]} /><meshStandardMaterial color="#d9bb82" metalness={.65} roughness={.3} /></mesh>
@@ -98,6 +120,6 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
     <CakeSection start={END} end={START + TAU} bump={bump} />
     <group ref={slice}><CakeSection start={START} end={END} bump={bump} /></group>
     <group rotation={[0, Math.PI, 0]}><IcingWriting /><Candle blownOut={blownOut} reduced={reduced} /></group>
-    <mesh ref={plate} position={[1.62, -.29, -2.28]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
+    <mesh ref={plate} position={[1.25, -.22, -1.78]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
   </group>;
 }
