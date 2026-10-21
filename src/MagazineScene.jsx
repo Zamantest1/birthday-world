@@ -4,21 +4,24 @@ import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 export const spreads = [
-  { title: 'The little things', lines: ['The tiny moments that', 'somehow become the', 'biggest memories.'], note: 'Some moments are small.', end: 'The way they stay with us is not.', photo: '/images/keepsake.png' },
-  { title: 'Your kind of magic', lines: ['The way you make ordinary', 'days feel a little', 'more golden.'], note: 'A thousand ordinary days.', end: 'Extraordinary, because of you.', photo: '/images/keepsake.png' },
-  { title: 'A note for you', lines: ['The world got a little', 'brighter on the day', 'you arrived.'], note: 'Here’s to your next chapter.', end: 'And all the beauty still to come.', photo: '/images/keepsake.png' },
+  { label: 'THE COVER', title: 'Birthday girl', caption: 'The special birthday issue.', lines: ['A whole universe,', 'in one extraordinary', 'person.'], note: 'The special birthday issue.', end: 'Made only for you.', photo: '/images/keepsake.png' },
+  { label: '01 / A LITTLE INTRODUCTION', title: 'The prettiest kind of magic', caption: 'A beautiful little life.', lines: ['Some people make a room', 'brighter just by being', 'in it. You have that light.'], note: 'A little reminder', end: 'of how lovely you are.', photo: '/images/keepsake.png' },
+  { label: '02 / THE LITTLE THINGS', title: 'Things that make you, you', caption: 'Your tiny habits.', lines: ['Your expressions. The way', 'you care. The things you', 'never notice about yourself.'], note: 'It is the little things', end: 'that become the biggest memories.', photo: '/images/keepsake.png' },
+  { label: '03 / YOUR KIND OF DAY', title: 'A day worth celebrating', caption: 'A little more golden.', lines: ['Today is not just another', 'date on the calendar. It is', 'the day the world got you.'], note: 'More laughter, more adventures,', end: 'more moments to keep.', photo: '/images/keepsake.png' },
+  { label: '04 / A NOTE FOR YOU', title: 'If you ever forget', caption: 'For you. Always.', lines: ['You are appreciated more', 'than you know. You deserve', 'gentleness and joy.'], note: 'Keep this page for the days', end: 'you need a little reminder.', photo: '/images/keepsake.png' },
+  { label: 'THE END', title: 'And the story goes on', caption: 'Another lovely beginning.', lines: ['In a world of temporary', 'things, some people become', 'a favourite part of the story.'], note: 'This is not the end.', end: 'It is another lovely beginning.', photo: '/images/keepsake.png' },
 ];
 function makePage(page, left, image) {
   const canvas = document.createElement('canvas'); canvas.width = 768; canvas.height = 1024;
   const c = canvas.getContext('2d'); c.fillStyle = '#f6f0e8'; c.fillRect(0, 0, 768, 1024);
   for (let i = 0; i < 8000; i++) { c.fillStyle = `rgba(84,55,45,${(i % 3) * .008})`; c.fillRect((i * 83.13) % 768, (i * 37.31) % 1024, 2, 2); }
   c.fillStyle = '#8b6a56'; c.font = '18px sans-serif'; c.textAlign = 'center';
-  c.fillText(left ? 'THE BIRTHDAY EDITION' : `CHAPTER 0${page + 1}`, 384, 80);
-  c.strokeStyle = '#d4c2ac'; c.beginPath(); c.moveTo(60, 108); c.lineTo(708, 108); c.stroke();
   const data = spreads[page];
+  c.fillText(left ? 'THE BIRTHDAY EDITION' : data.label, 384, 80);
+  c.strokeStyle = '#d4c2ac'; c.beginPath(); c.moveTo(60, 108); c.lineTo(708, 108); c.stroke();
   if (left) {
     c.drawImage(image, 70, 155, 628, 680);
-    c.fillStyle = '#5c3d4b'; c.font = 'italic 33px Georgia'; c.fillText(['A beautiful little life.', 'A little more golden.', 'For you. Always.'][page], 384, 901);
+    c.fillStyle = '#5c3d4b'; c.font = 'italic 33px Georgia'; c.fillText(data.caption, 384, 901);
   } else {
     c.fillStyle = '#a77c83'; c.font = '54px Georgia'; c.fillText('♡', 384, 245);
     c.fillStyle = '#392638'; c.font = '52px Georgia';
@@ -28,7 +31,7 @@ function makePage(page, left, image) {
     c.fillStyle = '#8d787c'; c.font = '22px sans-serif'; c.fillText(data.note, 384, 754); c.fillText(data.end, 384, 790);
     c.fillStyle = '#ad8b5d'; c.font = 'italic 26px Georgia'; c.fillText('— with love, always —', 384, 902);
   }
-  c.fillStyle = '#8b6a56'; c.font = '17px sans-serif'; c.fillText(`0${page * 2 + (left ? 1 : 2)}`, 384, 978);
+  c.fillStyle = '#8b6a56'; c.font = '17px sans-serif'; c.fillText(String(page * 2 + (left ? 1 : 2)).padStart(2, '0'), 384, 978);
   const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 function TurningPage({ from, to, textures, onDone, reduced }) {
