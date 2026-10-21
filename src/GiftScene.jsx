@@ -31,7 +31,7 @@ const LETTER_COPY = {
 };
 
 function Letter({ visible, reduced, mobile }) {
-  const group = useRef(); const paper = useRef(); const flap = useRef();
+  const group = useRef(); const paper = useRef();
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 1600;
     const c = canvas.getContext('2d');
@@ -43,7 +43,7 @@ function Letter({ visible, reduced, mobile }) {
     c.strokeStyle = '#ead0d4'; c.lineWidth = 2; c.strokeRect(68, 68, 1064, 1464);
     c.textAlign = 'center'; c.fillStyle = '#c27d96'; c.font = '58px Georgia'; c.fillText('♡', 600, 145);
     c.fillStyle = '#754052'; c.font = 'italic 59px Georgia'; c.fillText(LETTER_COPY.heading, 600, 235);
-    c.fillStyle = '#553142'; c.font = '36px Georgia';
+    c.fillStyle = '#553142'; c.font = '32px Georgia';
     const wrap = (text, maxWidth) => {
       const words = text.split(/\\s+/); const lines = []; let line = '';
       for (const word of words) {
@@ -54,9 +54,9 @@ function Letter({ visible, reduced, mobile }) {
     };
     let y = 355;
     for (const paragraph of LETTER_COPY.paragraphs) {
-      const lines = wrap(paragraph, 900);
-      for (const line of lines) { c.fillText(line, 600, y); y += 48; }
-      y += 28;
+      const lines = wrap(paragraph, 820);
+      for (const line of lines) { c.fillText(line, 600, y); y += 43; }
+      y += 22;
     }
     c.fillStyle = '#c27d96'; c.fillRect(520, y + 2, 160, 3); y += 64;
     c.fillStyle = '#754052'; c.font = 'italic 36px Georgia';
@@ -75,9 +75,8 @@ function Letter({ visible, reduced, mobile }) {
     group.current.position.z = .34 + next * .52;
     group.current.rotation.x = -.28 - (1 - smooth(0, .9, next)) * .62;
     group.current.rotation.y = Math.sin(state.clock.elapsedTime * .35) * .008;
-    group.current.scale.setScalar(.08 + next * (mobile ? .78 : .9));
+    group.current.scale.setScalar(.08 + next * (mobile ? .62 : .82));
     paper.current.material.opacity = Math.min(1, next * 2.2);
-    flap.current.rotation.x = (1 - smooth(.12, .88, next)) * -1.25;
   });
   return <group ref={group} position={[0, .12, .34]} visible={false}>
     <mesh ref={paper} position={[0, 0, 0]} castShadow receiveShadow>
@@ -88,12 +87,7 @@ function Letter({ visible, reduced, mobile }) {
       <boxGeometry args={[2.05, 2.72, .035]} />
       <meshStandardMaterial color="#e4c6c9" roughness={.94} />
     </mesh>
-    <group ref={flap} position={[0, 1.35, .02]}>
-      <mesh position={[0, -.34, .025]} castShadow>
-        <planeGeometry args={[2.02, .68]} />
-        <meshStandardMaterial color="#f4dfe3" side={THREE.DoubleSide} roughness={.9} />
-      </mesh>
-    </group>
+oup>
   </group>;
 }
 
