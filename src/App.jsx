@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useProgress } from '@react-three/drei';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 import * as THREE from 'three';
 import World from './World.jsx';
 import { spreads } from './MagazineScene.jsx';
-import { useBirthdayMicrophone, useSound } from './useSound.js';
+import { useSound } from './useSound.js';
 
 const CHAPTERS = ['Enter', 'The cake', 'The keepsake', 'The gift'];
 const ease = [0.22, 1, 0.36, 1];
@@ -44,8 +44,7 @@ function HeroCopy({ onEnter }) {
   </div>;
 }
 
-function CakeCopy({ candleOut, sliceServed, mic, onListen, onManual, onServe }) {
-  const hint = { requesting: 'Allow the microphone, then blow gently.', listening: 'Listening… blow softly toward your screen.', denied: 'Microphone unavailable — you can still put it out below.', unsupported: 'This browser can’t listen — you can still put it out below.', timeout: 'I didn’t quite catch that. Try once more.' }[mic.status];
+function CakeCopy({ candleOut, sliceServed, onExtinguish, onServe }) {
   return <>
     <motion.div className="chapter-head" {...reveal(.3)}>
       <p className="kicker">Chapter 02</p>
@@ -53,16 +52,12 @@ function CakeCopy({ candleOut, sliceServed, mic, onListen, onManual, onServe }) 
     </motion.div>
     <div className="action-dock">
       <AnimatePresence mode="wait">
-        {!candleOut && <motion.div key="blow" className="dock-inner" {...reveal(.6)}>
-          <button className="cta" onClick={onListen} disabled={mic.status === 'listening' || mic.status === 'requesting'}>
-            <Mic size={16} aria-hidden="true" /><span>{mic.status === 'listening' ? 'Listening…' : 'Blow out the candle'}</span>
-            {mic.status === 'listening' && <i className="pulse" aria-hidden="true" />}
-          </button>
-          <p className="hint" aria-live="polite">{hint || 'Close your eyes, make a wish, then blow gently.'}</p>
-          <button className="text-link" onClick={onManual}>Extinguish candle instead</button>
+        {!candleOut && <motion.div key="wish" className="dock-inner" {...reveal(.6)}>
+          <p className="hint">Close your eyes, make a wish, then let the candle glow out.</p>
+          <button className="cta" onClick={onExtinguish}><span>Make a Wish</span></button>
         </motion.div>}
         {candleOut && !sliceServed && <motion.div key="serve" className="dock-inner" {...reveal(.9)}>
-          <p className="celebrate">Wish made. <span>It’s safe with me.</span></p>
+          <p className="celebrate">Wish made. <span>Keep it close.</span></p>
           <button className="cta" onClick={onServe}><span>Serve the birthday slice</span></button>
         </motion.div>}
         {sliceServed && <motion.div key="served" className="dock-inner" {...reveal(1.4)}>
@@ -120,7 +115,6 @@ export default function App() {
   const busy = useRef(false);
 
   const extinguish = useCallback(() => { setCandleOut(true); sound.effect('blow'); }, [sound]);
-  const mic = useBirthdayMicrophone(extinguish, scene === 1 && !candleOut);
 
   const chapterComplete = scene === 0 || (scene === 1 && sliceServed) || (scene === 2 && page === spreads.length - 1) || (scene === 3 && giftOpen);
 
@@ -197,8 +191,7 @@ export default function App() {
       <AnimatePresence mode="wait">
         <motion.div key={scene} className="overlay-scene" exit={{ opacity: 0 }} transition={{ duration: .4 }}>
           {scene === 0 && <HeroCopy onEnter={() => goTo(1)} />}
-          {scene === 1 && <CakeCopy candleOut={candleOut} sliceServed={sliceServed} mic={mic}
-            onListen={() => { sound.start(); mic.listen(); }} onManual={() => { mic.stop(); extinguish(); }}
+          {scene === 1 && <CakeCopy candleOut={candleOut} sliceServed={sliceServed} onExtinguish={extinguish}
             onServe={() => { sound.effect('serve'); setSliceServed(true); }} />}
           {scene === 2 && <MagazineCopy page={page} turning={!!turn} onTurn={turnPage} />}
           {scene === 3 && <GiftCopy open={giftOpen} onOpen={() => { sound.start(); setGiftOpen(true); sound.effect('gift'); }} />}
