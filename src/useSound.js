@@ -86,7 +86,7 @@ export function useBirthdayMicrophone(onBlow, active) {
         analyser.getFloatTimeDomainData(samples);
         const rms = Math.sqrt(samples.reduce((sum, sample) => sum + sample * sample, 0) / samples.length);
         if (ticks++ < 5) { baseline += rms / 5; return; }
-        consecutive = rms > Math.max(.045, baseline * 2.5) ? consecutive + 1 : 0;
+        consecutive = rms > Math.max(.022, baseline * 2.1) ? consecutive + 1 : 0;
         if (consecutive >= 3) { stop(); setStatus('done'); callback.current(); }
       }, 100);
       const timeout = setTimeout(() => { stop(); setStatus('timeout'); }, 12000);
