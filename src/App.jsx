@@ -199,7 +199,7 @@ export default function App() {
           {scene === 0 && <HeroCopy onEnter={() => goTo(1)} />}
           {scene === 1 && <CakeCopy candleOut={candleOut} sliceServed={sliceServed} mic={mic}
             onListen={() => { sound.start(); mic.listen(); }} onManual={() => { mic.stop(); extinguish(); }}
-            onServe={() => { sound.effect('cut'); window.setTimeout(() => sound.effect('pop'), 180); window.setTimeout(() => sound.effect('serve'), 420); setSliceServed(true); }} />}
+            onServe={() => { sound.effect('serve'); setSliceServed(true); }} />}
           {scene === 2 && <MagazineCopy page={page} turning={!!turn} onTurn={turnPage} />}
           {scene === 3 && <GiftCopy open={giftOpen} onOpen={() => { sound.start(); setGiftOpen(true); sound.effect('gift'); }} />}
         </motion.div>
