@@ -151,13 +151,23 @@ export default function App() {
   }, [scene, page, turnPage, goTo]);
 
   const swipe = useRef(null);
-  const onPointerDown = (e) => { if (e.pointerType === 'touch') swipe.current = { x: e.clientX, y: e.clientY }; };
+  const onPointerDown = (e) => {
+    // Only the magazine scene interprets horizontal touch gestures as page turns.
+    // Cake-scene swipes belong to OrbitControls and must never navigate chapters.
+    if (scene !== 2 || e.pointerType !== 'touch' || e.target.closest?.('button')) {
+      swipe.current = null;
+      return;
+    }
+    swipe.current = { x: e.clientX, y: e.clientY };
+  };
   const onPointerUp = (e) => {
-    const s = swipe.current; swipe.current = null; if (!s) return;
-    const dx = e.clientX - s.x; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(e.clientY - s.y) * 1.5) return;
+    const s = swipe.current; swipe.current = null;
+    if (!s || scene !== 2 || e.pointerType !== 'touch') return;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
     const dir = dx < 0 ? 1 : -1;
-    if (scene === 2 && ((dir === 1 && page < spreads.length - 1) || (dir === -1 && page > 0))) turnPage(dir);
-    else if (scene > 0) goTo(scene + dir);
+    if ((dir === 1 && page < spreads.length - 1) || (dir === -1 && page > 0)) turnPage(dir);
   };
 
   const state = { scene, candleOut, sliceServed, page, turn, giftOpen };
