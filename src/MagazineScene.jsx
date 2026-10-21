@@ -45,8 +45,8 @@ function TurningPage({ from, to, textures, onDone, reduced }) {
   }, [forward, from, to, textures]);
   useEffect(() => () => { geometry.dispose(); backMap.dispose(); }, [geometry, backMap]);
   useFrame((_, dt) => {
-    progress.current = Math.min(1, progress.current + dt / (reduced ? .05 : 1.35));
-    const p = progress.current; const eased = p * p * (3 - 2 * p);
+    progress.current = Math.min(1, progress.current + dt / (reduced ? .05 : 1.65));
+    const p = progress.current; const eased = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
     group.current.rotation.y = forward ? -eased * Math.PI : -Math.PI + eased * Math.PI;
     const lift = Math.sin(eased * Math.PI);
     const positions = geometry.attributes.position;
