@@ -12,6 +12,7 @@
     "@react-three/drei": "latest",
     "@react-three/fiber": "latest",
     "@vitejs/plugin-react": "latest",
+    "framer-motion": "^14.5.0",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
