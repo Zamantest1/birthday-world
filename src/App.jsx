@@ -3,16 +3,21 @@ import { ArrowDown, ArrowLeft, ArrowRight, CakeSlice, Gift, Heart, Mic, Sparkles
 import CakeScene from './CakeScene.jsx';
 
 const pages = [
-  { label: 'CHAPTER 01', title: 'The little things', text: 'The tiny moments that somehow become the biggest memories.', note: 'Some moments are small. The way they stay with us is not.' },
-  { label: 'CHAPTER 02', title: 'Your kind of magic', text: 'The way you make ordinary days feel a little more golden.', note: 'You make the ordinary feel like something worth remembering.' },
-  { label: 'CHAPTER 03', title: 'A note for you', text: 'The world got a little brighter on the day you arrived.', note: 'I hope this next chapter gives you a hundred reasons to smile.' },
+  { label: 'THE COVER', title: 'Birthday girl', text: 'A whole universe, in one extraordinary person.', note: 'THE SPECIAL BIRTHDAY ISSUE · MADE ONLY FOR YOU' },
+  { label: '01 / A LITTLE INTRODUCTION', title: 'The prettiest kind of magic', text: 'Some people make a room brighter just by being in it. You have that kind of light.', note: 'A little reminder of how lovely you are.' },
+  { label: '02 / THE LITTLE THINGS', title: 'Things that make you, you', text: 'Your expressions. Your tiny habits. The way you care. The things you probably do not even notice about yourself.', note: 'It is the little things that become the biggest memories.' },
+  { label: '03 / YOUR KIND OF DAY', title: 'A day worth celebrating', text: 'Today is not just another date on the calendar. It is the day the world got you.', note: 'More laughter, more adventures, more moments to keep.' },
+  { label: '04 / A NOTE FOR YOU', title: 'If you ever forget', text: 'You are appreciated more than you know. You deserve gentleness, joy, and all the beautiful things you give to others.', note: 'Keep this page for the days you need a little reminder.' },
+  { label: 'THE END', title: 'And the story goes on', text: 'In a world full of temporary things, some people become a favourite part of the story.', note: 'This is not the end. It is another lovely beginning.' },
 ];
 
 export default function App() {
   const [scene, setScene] = useState(0);
   const [candleOut, setCandleOut] = useState(false);
   const [sliceServed, setSliceServed] = useState(false);
-  const [page, setPage] = useState(0);\n  const [pageDirection, setPageDirection] = useState('');\n  const [pageAnimating, setPageAnimating] = useState(false);
+  const [page, setPage] = useState(0);
+  const [pageDirection, setPageDirection] = useState('');
+  const [pageAnimating, setPageAnimating] = useState(false);
   const [giftOpen, setGiftOpen] = useState(false);
   const [micStatus, setMicStatus] = useState('idle');
   const [transitioning, setTransitioning] = useState(false);
