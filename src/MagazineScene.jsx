@@ -11,6 +11,17 @@ export const spreads = [
   { label: '04 / A NOTE FOR YOU', title: 'If you ever forget', caption: 'For you. Always.', lines: ['You are appreciated more', 'than you know. You deserve', 'gentleness and joy.'], note: 'Keep this page for the days', end: 'you need a little reminder.', photo: '/images/keepsake.png' },
   { label: 'THE END', title: 'And the story goes on', caption: 'Another lovely beginning.', lines: ['In a world of temporary', 'things, some people become', 'a favourite part of the story.'], note: 'This is not the end.', end: 'It is another lovely beginning.', photo: '/images/keepsake.png' },
 ];
+spreads.forEach(s => useTexture.preload(s.photo));
+
+export function heartPath(c, x, y, size) {
+  const s = size / 2;
+  c.beginPath();
+  c.moveTo(x, y + s * .6);
+  c.bezierCurveTo(x - s * 2, y - s * .6, x - s * .9, y - s * 2, x, y - s * .8);
+  c.bezierCurveTo(x + s * .9, y - s * 2, x + s * 2, y - s * .6, x, y + s * .6);
+  c.closePath();
+}
+
 function makePage(page, left, image) {
   const canvas = document.createElement('canvas'); canvas.width = 768; canvas.height = 1024;
   const c = canvas.getContext('2d'); c.fillStyle = '#f6f0e8'; c.fillRect(0, 0, 768, 1024);
@@ -23,7 +34,7 @@ function makePage(page, left, image) {
     c.drawImage(image, 70, 155, 628, 680);
     c.fillStyle = '#5c3d4b'; c.font = 'italic 33px Georgia'; c.fillText(data.caption, 384, 901);
   } else {
-    c.fillStyle = '#a77c83'; c.font = '54px Georgia'; c.fillText('♡', 384, 245);
+    c.strokeStyle = '#a77c83'; c.lineWidth = 3; heartPath(c, 384, 228, 30); c.stroke();
     c.fillStyle = '#392638'; c.font = '52px Georgia';
     const title = data.title.split(' '); const split = Math.ceil(title.length / 2);
     c.fillText(title.slice(0, split).join(' '), 384, 358); c.fillText(title.slice(split).join(' '), 384, 425);

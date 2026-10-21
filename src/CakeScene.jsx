@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { heartPath } from './MagazineScene.jsx';
 
 const TAU = Math.PI * 2;
 const START = .28;
@@ -28,10 +29,10 @@ function IcingWriting() {
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = 1024; canvas.height = 512;
     const c = canvas.getContext('2d'); c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.shadowColor = '#77524080'; c.shadowBlur = 3; c.shadowOffsetY = 3;
-    c.fillStyle = '#76515f'; c.font = 'italic 72px Georgia';
-    c.fillText('Someone I love', 512, 158); c.fillText('was born today', 512, 256);
-    c.fillStyle = '#aa7183'; c.font = '48px Georgia'; c.fillText('♥', 512, 356);
+    c.shadowColor = '#3a1f2a66'; c.shadowBlur = 2; c.shadowOffsetY = 3;
+    c.fillStyle = '#5b2f45'; c.font = 'italic bold 84px Georgia';
+    c.fillText('Someone I love', 512, 150); c.fillText('was born today', 512, 262);
+    c.fillStyle = '#a5506e'; heartPath(c, 512, 370, 46); c.fill();
     const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);

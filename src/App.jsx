@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useProgress } from '@react-three/drei';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Sparkle, Volume2, VolumeX } from 'lucide-react';
 import * as THREE from 'three';
 import World from './World.jsx';
 import { spreads } from './MagazineScene.jsx';
@@ -23,7 +23,9 @@ function useIsMobile() {
 
 function Loader() {
   const { active, progress } = useProgress();
-  return <AnimatePresence>{active && <motion.div className="loader" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .6 }}>
+  const [ready, setReady] = useState(false);
+  useEffect(() => { if (!active && progress === 100) setReady(true); }, [active, progress]);
+  return <AnimatePresence>{active && !ready && <motion.div className="loader" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .6 }}>
     <span>Preparing your little world</span><i style={{ transform: `scaleX(${progress / 100})` }} />
   </motion.div>}</AnimatePresence>;
 }
@@ -169,7 +171,7 @@ export default function App() {
     <div className="vignette" aria-hidden="true" />
 
     <header className="topbar">
-      <span className="mark">For you <span aria-hidden="true">✦</span></span>
+      <span className="mark">For you <Sparkle size={11} aria-hidden="true" /></span>
       <button className="sound" onClick={sound.toggle} aria-pressed={!sound.muted} aria-label={sound.muted ? 'Turn sound on' : 'Turn sound off'}>
         {sound.muted ? <VolumeX size={16} /> : <Volume2 size={16} />}<span>{sound.muted ? 'Sound off' : 'Sound on'}</span>
       </button>
