@@ -8,7 +8,7 @@ import MagazineScene from './MagazineScene.jsx';
 import GiftScene from './GiftScene.jsx';
 import { Glow, Motes, ParticleField } from './three-utils.jsx';
 
-const BACKGROUNDS = ['#171221', '#21182c', '#1a1322', '#150f1d'];
+const BACKGROUNDS = ['#1b111a', '#291824', '#21131d', '#1c1018'];
 
 function shotFor({ scene, candleOut, sliceServed, turn, giftOpen }) {
   if (scene === 0) return { pos: [0, 0, 7.4], look: [0, 0, 0], k: 1.25 };
@@ -72,11 +72,11 @@ function CakeStage({ candleOut, sliceServed, reduced, mobile }) {
   useFrame((_, dt) => { warm.current.intensity = THREE.MathUtils.damp(warm.current.intensity, candleOut ? 6 : 14, 2, dt); });
   return <group>
     <spotLight position={[3, 5.5, 4]} angle={.4} penumbra={.85} intensity={75} color="#fbeedd" castShadow shadow-mapSize={mobile ? 1024 : 2048} shadow-bias={-.0003} shadow-normalBias={.02} />
-    <spotLight position={[-3.5, 3, -3.5]} angle={.55} penumbra={1} intensity={55} color="#a184d1" />
+    <spotLight position={[-3.5, 3, -3.5]} angle={.55} penumbra={1} intensity={55} color="#d58ba8" />
     <pointLight ref={warm} position={[-2.6, 1.2, 1.8]} intensity={14} color="#d8b56d" distance={7} />
-    <Glow color="#5a3f7c" scale={7.5} opacity={.6} position={[0, .6, -2.6]} />
-    <Glow color="#b98a9d" scale={3.6} opacity={.18} position={[0, .3, -2.2]} />
-    <mesh position={[0, -1.06, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[9, 64]} /><meshStandardMaterial color="#251a30" roughness={.92} /></mesh>
+    <Glow color="#75415e" scale={7.5} opacity={.6} position={[0, .6, -2.6]} />
+    <Glow color="#d99ab1" scale={3.6} opacity={.18} position={[0, .3, -2.2]} />
+    <mesh position={[0, -1.06, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[9, 64]} /><meshStandardMaterial color="#30202c" roughness={.92} /></mesh>
     <mesh position={[0, -1.055, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[2.1, 2.13, 128]} /><meshBasicMaterial color="#d8b56d" transparent opacity={.28} toneMapped={false} /></mesh>
     <ContactShadows position={[0, -1.05, 0]} scale={8} blur={2.4} opacity={.65} far={2.5} color="#07040a" />
     <CakeScene blownOut={candleOut} sliceServed={sliceServed} reduced={reduced} />
@@ -91,10 +91,10 @@ export default function World({ state, reduced, mobile, onTurnDone }) {
     <Background scene={scene} />
     <CameraRig state={state} reduced={reduced} />
     <OrbitControls makeDefault enabled={scene === 1} enablePan={false} enableDamping dampingFactor={0.085} rotateSpeed={mobile ? 0.8 : 0.65} zoomSpeed={0.7} minDistance={3.6} maxDistance={8} minPolarAngle={Math.PI / 3.4} maxPolarAngle={Math.PI * 0.78} />
-    <ambientLight intensity={.18} color="#dccfe8" />
+    <ambientLight intensity={.18} color="#f0d8e2" />
     <Environment resolution={128} frames={1}>
       <Lightformer form="rect" intensity={1.4} color="#f6f0e8" position={[3, 4, 3]} scale={[4, 2, 1]} />
-      <Lightformer form="rect" intensity={.8} color="#9b7cc4" position={[-4, 2, -3]} scale={[4, 3, 1]} />
+      <Lightformer form="rect" intensity={.8} color="#ce8eaa" position={[-4, 2, -3]} scale={[4, 3, 1]} />
       <Lightformer form="ring" intensity={1} color="#d8b56d" position={[0, 3, -4]} scale={2} />
     </Environment>
     {scene === 0 && <HeroScene reduced={reduced} mobile={mobile} />}
@@ -102,7 +102,7 @@ export default function World({ state, reduced, mobile, onTurnDone }) {
     {scene === 2 && <Suspense fallback={null}>
       <spotLight position={[1.5, 5, 3]} angle={.5} penumbra={.9} intensity={45} color="#fbefe0" castShadow shadow-mapSize={1024} shadow-bias={-.0004} />
       <spotLight position={[-3, 2, -2]} angle={.6} penumbra={1} intensity={20} color="#9b7cc4" />
-      <Glow color="#4f3570" scale={7} opacity={.5} position={[0, 0, -2.5]} />
+      <Glow color="#75415e" scale={7} opacity={.5} position={[0, 0, -2.5]} />
       <ParticleField count={mobile ? 80 : 160} inner={3} outer={10} size={.05} color="#e8c77f" opacity={.4} drift={reduced ? 0 : .006} seed={7} />
       <Floating reduced={reduced}><MagazineScene page={state.page} turn={state.turn} onTurnDone={onTurnDone} reduced={reduced} /></Floating>
       <ContactShadows position={[0, -1.25, 0]} scale={7} blur={3} opacity={.55} far={2} color="#07040a" />
