@@ -1,116 +1,100 @@
-import { Canvas } from '@react-three/fiber';
-import { ContactShadows, Environment, Float, OrbitControls, Sparkles } from '@react-three/drei';
-import { Suspense } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function Candle({ blownOut }) {
-  return (
-    <group position={[0, 1.15, 0]}>
-      <mesh castShadow position={[0, 0.18, 0]}>
-        <cylinderGeometry args={[0.055, 0.055, 0.42, 24]} />
-        <meshStandardMaterial color="#f8efe3" roughness={0.38} />
-      </mesh>
-      {[0, 1, 2, 3, 4].map((n) => (
-        <mesh key={n} position={[0, 0.18 - n * 0.075, 0.056]} rotation={[0, 0, -0.5]}>
-          <boxGeometry args={[0.12, 0.018, 0.008]} />
-          <meshStandardMaterial color="#d8b56d" roughness={0.5} />
-        </mesh>
-      ))}
-      {!blownOut && (
-        <Float speed={4} rotationIntensity={0.12} floatIntensity={0.12}>
-          <mesh position={[0, 0.48, 0]} scale={[0.09, 0.16, 0.09]}>
-            <sphereGeometry args={[1, 24, 24]} />
-            <meshBasicMaterial color="#ffb24a" />
-          </mesh>
-          <pointLight position={[0, 0.48, 0]} color="#ffb24a" intensity={1.6} distance={2.2} />
-        </Float>
-      )}
-      {blownOut && <Sparkles count={9} scale={[0.4, 0.6, 0.4]} size={2} speed={0.2} color="#c9b9d1" position={[0, 0.48, 0]} />}
-    </group>
-  );
+const TAU = Math.PI * 2;
+const START = .28;
+const END = .94;
+function sector(radius, height, start, end) {
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  for (let i = 0; i <= 100; i++) { const a = start + (end - start) * i / 100; shape.lineTo(Math.sin(a) * radius, Math.cos(a) * radius); }
+  shape.lineTo(0, 0);
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: .012, bevelThickness: .012, curveSegments: 64 });
+  geometry.rotateX(-Math.PI / 2);
+  return geometry;
 }
-
-function Cake({ blownOut, sliceServed }) {
-  return (
-    <group>
-      <mesh position={[0, -0.72, 0]} receiveShadow>
-        <cylinderGeometry args={[1.78, 1.72, 0.14, 96]} />
-        <meshStandardMaterial color="#d9c8b7" roughness={0.65} />
-      </mesh>
-      <mesh position={[0, -0.05, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[1.5, 1.55, 1.18, 96]} />
-        <meshStandardMaterial color="#f0dccc" roughness={0.38} />
-      </mesh>
-      <mesh position={[0, 0.57, 0]} castShadow>
-        <cylinderGeometry args={[1.54, 1.54, 0.15, 96]} />
-        <meshStandardMaterial color="#fffaf4" roughness={0.28} />
-      </mesh>
-      <mesh position={[0, 0.48, 0]} castShadow>
-        <torusGeometry args={[1.49, 0.075, 14, 96]} />
-        <meshStandardMaterial color="#fffaf4" roughness={0.28} />
-      </mesh>
-      {Array.from({ length: 18 }, (_, i) => {
-        const angle = (i / 18) * Math.PI * 2;
-        return (
-          <mesh key={i} position={[Math.cos(angle) * 1.43, 0.42, Math.sin(angle) * 1.43]} castShadow>
-            <sphereGeometry args={[0.095, 16, 16]} />
-            <meshStandardMaterial color="#fffaf4" roughness={0.32} />
-          </mesh>
-        );
-      })}
-      {Array.from({ length: 12 }, (_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
-        return (
-          <mesh key={i} position={[Math.cos(angle) * 1.18, 0.655, Math.sin(angle) * 1.18]} scale={[0.045, 0.018, 0.045]}>
-            <sphereGeometry args={[1, 16, 16]} />
-            <meshStandardMaterial color={i % 2 ? '#d8b56d' : '#b98a9d'} />
-          </mesh>
-        );
-      })}
-      <group position={[0, 0, 0]}>
-        <mesh position={[0, 0.67, 0]} scale={[0.26, 0.02, 0.26]}>
-          <cylinderGeometry args={[1, 1, 1, 32]} />
-          <meshStandardMaterial color="#fffaf4" />
-        </mesh>
-      </group>
-      <Candle blownOut={blownOut} />
-      {sliceServed && (
-        <group position={[1.8, -0.2, 0.8]} rotation={[0, -0.55, 0]}>
-          <mesh position={[0, 0.1, 0]} rotation={[0, 0, -0.12]} castShadow>
-            <cylinderGeometry args={[0.42, 0.46, 0.68, 3, 1, false, Math.PI / 2]} />
-            <meshStandardMaterial color="#f0dccc" roughness={0.4} />
-          </mesh>
-          <mesh position={[0, 0.45, 0]} rotation={[0, 0, -0.12]}>
-            <cylinderGeometry args={[0.45, 0.45, 0.09, 3, 1, false, Math.PI / 2]} />
-            <meshStandardMaterial color="#fffaf4" roughness={0.3} />
-          </mesh>
-          <mesh position={[0.05, 0.52, 0.02]}>
-            <sphereGeometry args={[0.09, 16, 16]} />
-            <meshStandardMaterial color="#b45f71" roughness={0.3} />
-          </mesh>
-        </group>
-      )}
-    </group>
-  );
+function useFrostingTexture() {
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 256;
+    const c = canvas.getContext('2d'); c.fillStyle = '#aaa'; c.fillRect(0, 0, 256, 256);
+    let seed = 12;
+    for (let i = 0; i < 18000; i++) { seed = (seed * 16807) % 2147483647; const x = seed % 256; seed = (seed * 16807) % 2147483647; const y = seed % 256; c.fillStyle = `rgba(255,255,255,${(i % 5) * .025})`; c.fillRect(x, y, 2, 2); }
+    const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 2); return t;
+  }, []);
+  useEffect(() => () => texture.dispose(), [texture]); return texture;
 }
-
-export default function CakeScene({ blownOut, sliceServed }) {
-  return (
-    <div className="cake-canvas" aria-label="Interactive 3D birthday cake">
-      <Canvas shadows dpr={[1, 1.6]} camera={{ position: [4.1, 3.5, 6.4], fov: 38 }}>
-        <color attach="background" args={['#f6f0e8']} />
-        <fog attach="fog" args={['#f6f0e8', 9, 18]} />
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[4, 7, 5]} intensity={2.2} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-        <pointLight position={[-4, 2, -3]} color="#e4c9ed" intensity={1.2} />
-        <Suspense fallback={null}>
-          <Cake blownOut={blownOut} sliceServed={sliceServed} />
-          <ContactShadows position={[0, -0.82, 0]} opacity={0.28} scale={7} blur={2.8} far={3} />
-          <Environment preset="studio" />
-        </Suspense>
-        <OrbitControls enablePan={false} enableZoom={false} minPolarAngle={0.85} maxPolarAngle={1.65} minAzimuthAngle={-0.75} maxAzimuthAngle={0.75} />
-      </Canvas>
-      <div className="cake-icing-note">Someone I love<br />was born today <span>♥</span></div>
-    </div>
-  );
+function IcingWriting() {
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas'); canvas.width = 1024; canvas.height = 512;
+    const c = canvas.getContext('2d'); c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.shadowColor = '#77524080'; c.shadowBlur = 3; c.shadowOffsetY = 3;
+    c.fillStyle = '#76515f'; c.font = 'italic 72px Georgia';
+    c.fillText('Someone I love', 512, 158); c.fillText('was born today', 512, 256);
+    c.fillStyle = '#aa7183'; c.font = '48px Georgia'; c.fillText('♥', 512, 356);
+    const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }, []);
+  useEffect(() => () => texture.dispose(), [texture]);
+  return <mesh position={[-.15, .976, -.1]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[2, 1]} /><meshStandardMaterial map={texture} transparent depthWrite={false} roughness={.78} polygonOffset polygonOffsetFactor={-2} /></mesh>;
+}
+function Rosette({ angle, bottom = false }) {
+  return <group position={[Math.sin(angle) * (bottom ? 1.42 : 1.28), bottom ? -.12 : 1, -Math.cos(angle) * (bottom ? 1.42 : 1.28)]} rotation={[0, angle, 0]}>
+    {Array.from({ length: 6 }, (_, j) => <mesh key={j} castShadow position={[Math.sin(j * TAU / 6) * .047, 0, Math.cos(j * TAU / 6) * .047]} rotation={[.25, j * TAU / 6, .3]} scale={[.045, bottom ? .055 : .09, .071]}><sphereGeometry args={[1, 10, 8]} /><meshStandardMaterial color="#f6eadd" roughness={.72} /></mesh>)}
+    <mesh position={[0, .04, 0]}><sphereGeometry args={[.037, 10, 8]} /><meshStandardMaterial color={bottom ? '#f6eadd' : '#d8b56d'} metalness={bottom ? 0 : .65} roughness={.38} /></mesh>
+  </group>;
+}
+function CakeSection({ start, end, bump }) {
+  const layers = useMemo(() => [
+    { y: -.13, h: .29, r: 1.38, color: '#d9b080' },
+    { y: .16, h: .07, r: 1.39, color: '#9f5d72' },
+    { y: .23, h: .08, r: 1.39, color: '#f4dfce' },
+    { y: .31, h: .25, r: 1.38, color: '#d9b080' },
+    { y: .56, h: .07, r: 1.39, color: '#9f5d72' },
+    { y: .63, h: .26, r: 1.38, color: '#e1bb8e' },
+    { y: .89, h: .07, r: 1.43, color: '#f6eadd' },
+  ].map(l => ({ ...l, geo: sector(l.r, l.h, start, end) })), [start, end]);
+  useEffect(() => () => layers.forEach(l => l.geo.dispose()), [layers]);
+  return <>
+    {layers.map((l, i) => <mesh key={i} geometry={l.geo} position={[0, l.y, 0]} castShadow receiveShadow><meshStandardMaterial color={l.color} bumpMap={bump} bumpScale={i === 6 ? .016 : .06} roughness={.86} /></mesh>)}
+    <mesh rotation={[0, Math.PI - end, 0]} position={[0, .39, 0]} castShadow receiveShadow><cylinderGeometry args={[1.43, 1.44, 1.04, 96, 12, true, 0, end - start]} /><meshStandardMaterial color="#eee0cf" bumpMap={bump} bumpScale={.025} roughness={.7} /></mesh>
+    {[.04, .24, .46, .67, .82].map(y => <mesh key={y} rotation={[Math.PI / 2, 0, start - Math.PI / 2]} position={[0, y, 0]}><torusGeometry args={[1.432, .009, 4, 96, end - start]} /><meshStandardMaterial color="#e5d5c3" roughness={.8} /></mesh>)}
+    {Array.from({ length: 38 }, (_, i) => i * TAU / 38).filter(a => a >= start && a < end).map(a => <group key={a}><Rosette angle={a} /><Rosette angle={a} bottom /></group>)}
+  </>;
+}
+function Candle({ blownOut, reduced }) {
+  const flame = useRef(); const light = useRef(); const smoke = useRef(); const elapsed = useRef(0);
+  useFrame((state, dt) => {
+    const t = state.clock.elapsedTime;
+    elapsed.current = blownOut ? elapsed.current + dt : 0;
+    const scale = blownOut ? Math.max(0, 1 - elapsed.current * 2) : 1;
+    flame.current.scale.set(.065 * scale, (.16 + (reduced ? 0 : Math.sin(t * 16) * .014)) * scale, .065 * scale);
+    flame.current.rotation.z = blownOut ? -elapsed.current * 1.5 : Math.sin(t * 7) * .09;
+    light.current.intensity = scale * 2.5;
+    smoke.current.children.forEach((m, i) => { const age = elapsed.current - i * .16; m.visible = blownOut && age > 0 && age < 2.8; m.position.set(Math.sin(age * 3 + i) * .08, 1.6 + age * .33, -.42); m.scale.setScalar(.04 + age * .025); m.material.opacity = Math.max(0, .22 * (1 - age / 2.8)); });
+  });
+  return <>
+    <mesh position={[0, 1.22, -.42]} castShadow><cylinderGeometry args={[.047, .05, .52, 24]} /><meshStandardMaterial color="#c59a68" metalness={.3} roughness={.4} /></mesh>
+    {Array.from({ length: 8 }, (_, i) => <mesh key={i} position={[0, 1 + i * .06, -.42]} rotation={[Math.PI / 2, .13, 0]}><torusGeometry args={[.049, .006, 5, 24]} /><meshStandardMaterial color="#f6eadd" /></mesh>)}
+    <mesh position={[0, 1.5, -.42]}><cylinderGeometry args={[.009, .009, .06, 8]} /><meshStandardMaterial color="#3f2931" /></mesh>
+    <mesh ref={flame} position={[0, 1.65, -.42]}><sphereGeometry args={[1, 20, 20]} /><meshBasicMaterial color="#ffe1a1" toneMapped={false} /></mesh>
+    <pointLight ref={light} position={[0, 1.65, -.42]} color="#ffb85e" distance={3} decay={2} />
+    <group ref={smoke}>{Array.from({ length: 10 }, (_, i) => <mesh key={i} visible={false}><sphereGeometry args={[1, 8, 8]} /><meshBasicMaterial color="#d3c5cf" transparent depthWrite={false} /></mesh>)}</group>
+  </>;
+}
+export default function CakeScene({ blownOut, sliceServed, reduced }) {
+  const slice = useRef(); const plate = useRef(); const bump = useFrostingTexture();
+  useFrame((_, dt) => {
+    const speed = reduced ? 1 : 1 - Math.exp(-dt * 2.4);
+    slice.current.position.lerp(new THREE.Vector3(sliceServed ? 1.15 : 0, sliceServed ? -.11 : 0, sliceServed ? -1.65 : 0), speed);
+    plate.current.scale.lerp(new THREE.Vector3(...(sliceServed ? [1, 1, 1] : [.001, .001, .001])), speed);
+  });
+  return <group rotation={[0, Math.PI, 0]} position={[0, -.35, 0]}>
+    <mesh position={[0, -.24, 0]} castShadow receiveShadow><cylinderGeometry args={[1.7, 1.68, .12, 96]} /><meshStandardMaterial color="#d9bb82" metalness={.65} roughness={.3} /></mesh>
+    <mesh position={[0, -.48, 0]} castShadow><cylinderGeometry args={[.65, .86, .4, 64]} /><meshStandardMaterial color="#41303e" metalness={.38} roughness={.32} /></mesh>
+    <mesh position={[0, -.7, 0]} receiveShadow><cylinderGeometry args={[1, 1.05, .06, 64]} /><meshStandardMaterial color="#d9bb82" metalness={.6} roughness={.3} /></mesh>
+    <CakeSection start={END} end={START + TAU} bump={bump} />
+    <group ref={slice}><CakeSection start={START} end={END} bump={bump} /></group>
+    <group rotation={[0, Math.PI, 0]}><IcingWriting /><Candle blownOut={blownOut} reduced={reduced} /></group>
+    <mesh ref={plate} position={[1.62, -.29, -2.28]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
+  </group>;
 }
