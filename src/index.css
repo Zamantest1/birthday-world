@@ -98,3 +98,21 @@ em { font-style: italic; color: var(--gold); }
   .pulse { animation: none; }
   * { transition-duration: .01ms !important; }
 }
+
+
+/* Mobile-first refinements: less copy, clearer controls, more room for the 3D object. */
+@media (max-width: 600px) {
+  .chapter-head { top: 86px; }
+  .chapter-head .kicker { margin-bottom: 7px; font-size: 9px; letter-spacing: .18em; }
+  .chapter-head h2 { font-size: clamp(28px, 8vw, 34px); }
+  .hero-copy { padding: 0 22px; }
+  .hero-copy .kicker { font-size: 9px; letter-spacing: .15em; margin-bottom: 10px; }
+  .hero-copy h1 { font-size: clamp(37px, 10vw, 52px); }
+  .lede { margin: 16px 0 22px; max-width: 26ch; font-size: 13px; line-height: 1.5; }
+  .hint { max-width: 280px; font-size: 11px; line-height: 1.4; }
+  .action-dock { bottom: 66px; }
+  .cta { min-height: 48px; padding: 13px 19px; letter-spacing: .08em; }
+  .nav-btn { font-size: 9px; letter-spacing: .12em; bottom: 12px; }
+  .topbar { padding: 15px 18px; }
+  .sound { font-size: 9px; letter-spacing: .08em; }
+}
