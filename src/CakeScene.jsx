@@ -82,22 +82,12 @@ function Candle({ blownOut, reduced }) {
   </>;
 }
 export default function CakeScene({ blownOut, sliceServed, reduced }) {
-  const slice = useRef(); const plate = useRef(); const knife = useRef(); const confetti = useRef(); const balloons = useRef([]); const popElapsed = useRef(0); const bump = useFrostingTexture();
+  const slice = useRef(); const plate = useRef(); const confetti = useRef(); const bump = useFrostingTexture();
   const cutProgress = useRef(0);
   useFrame((_, dt) => {
     const speed = reduced ? 1 : 1 - Math.exp(-dt * 2.4);
     cutProgress.current = THREE.MathUtils.damp(cutProgress.current, sliceServed ? 1 : 0, reduced ? 12 : 2.8, dt);
-    popElapsed.current = sliceServed ? popElapsed.current + dt : 0;
-    knife.current.position.y = .91 - Math.sin(cutProgress.current * Math.PI) * .2;
-    knife.current.rotation.z = -.12 - cutProgress.current * .35;
-    knife.current.position.x = .32 + cutProgress.current * .12;
-    balloons.current.forEach((balloon, i) => {
-      if (!balloon) return;
-      const age = popElapsed.current - i * .13;
-      const scale = age < 0 ? 1 : Math.max(0, 1 - age * 8);
-      balloon.scale.setScalar(scale);
-      balloon.visible = scale > 0;
-    });
+
     confetti.current.children.forEach((piece, i) => {
       const active = sliceServed;
       const angle = i * 2.399963;
@@ -116,36 +106,7 @@ export default function CakeScene({ blownOut, sliceServed, reduced }) {
     <CakeSection start={END} end={START + TAU} bump={bump} />
     <group ref={slice}><CakeSection start={START} end={END} bump={bump} /></group>
     <group rotation={[0, Math.PI, 0]}><IcingWriting /><Candle blownOut={blownOut} reduced={reduced} /></group>
-    <group ref={knife} position={[.32, .91, .82]} rotation={[0, -.61, -.12]} scale={.88}>
-      <mesh position={[.16, -.015, 0]} rotation={[0, 0, -.08]} castShadow>
-        <boxGeometry args={[.78, .055, .018]} />
-        <meshStandardMaterial color="#cfd4dc" metalness={.92} roughness={.22} />
-      </mesh>
-      <mesh position={[-.36, .005, 0]} castShadow>
-        <boxGeometry args={[.32, .085, .075]} />
-        <meshStandardMaterial color="#65404b" metalness={.12} roughness={.48} />
-      </mesh>
-      <mesh position={[.57, -.02, 0]} rotation={[0, 0, -Math.PI / 2]} castShadow>
-        <coneGeometry args={[.035, .13, 4]} />
-        <meshStandardMaterial color="#dce1e8" metalness={.9} roughness={.2} />
-      </mesh>
-    </group>
     <group ref={confetti}>{Array.from({ length: 28 }, (_, i) => <mesh key={i} visible={false} castShadow><sphereGeometry args={[.035 + (i % 3) * .009, 8, 8]} /><meshStandardMaterial color={["#f2c66d", "#e88ba5", "#a58bdf", "#8ed6c0", "#f6eadd"][i % 5]} roughness={.45} /></mesh>)}</group>
-    <group ref={el => { balloons.current[0] = el; }} position={[-1.95, .82, .15]}>
-      <mesh castShadow><sphereGeometry args={[.22, 20, 16]} /><meshStandardMaterial color="#d99bb3" roughness={.35} metalness={.05} /></mesh>
-      <mesh position={[0, -.25, 0]} rotation={[Math.PI, 0, 0]}><coneGeometry args={[.055, .1, 8]} /><meshStandardMaterial color="#d99bb3" /></mesh>
-      <mesh position={[0, -.48, 0]}><cylinderGeometry args={[.004, .004, .38, 6]} /><meshStandardMaterial color="#e8d5c7" /></mesh>
-    </group>
-    <group ref={el => { balloons.current[1] = el; }} position={[1.95, 1.12, -.35]}>
-      <mesh castShadow><sphereGeometry args={[.24, 20, 16]} /><meshStandardMaterial color="#a995d4" roughness={.35} metalness={.05} /></mesh>
-      <mesh position={[0, -.27, 0]} rotation={[Math.PI, 0, 0]}><coneGeometry args={[.055, .1, 8]} /><meshStandardMaterial color="#a995d4" /></mesh>
-      <mesh position={[0, -.52, 0]}><cylinderGeometry args={[.004, .004, .42, 6]} /><meshStandardMaterial color="#e8d5c7" /></mesh>
-    </group>
-    <group ref={el => { balloons.current[2] = el; }} position={[1.8, 1.85, 1.15]}>
-      <mesh castShadow><sphereGeometry args={[.19, 20, 16]} /><meshStandardMaterial color="#e9c879" roughness={.35} metalness={.05} /></mesh>
-      <mesh position={[0, -.22, 0]} rotation={[Math.PI, 0, 0]}><coneGeometry args={[.05, .09, 8]} /><meshStandardMaterial color="#e9c879" /></mesh>
-      <mesh position={[0, -.45, 0]}><cylinderGeometry args={[.004, .004, .36, 6]} /><meshStandardMaterial color="#e8d5c7" /></mesh>
-    </group>
     <mesh ref={plate} position={[1.62, -.29, -2.28]} receiveShadow><cylinderGeometry args={[.8, .75, .05, 64]} /><meshStandardMaterial color="#f4e9d8" metalness={.12} roughness={.3} /></mesh>
   </group>;
 }
