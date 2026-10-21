@@ -12,7 +12,7 @@ export default function App() {
   const [scene, setScene] = useState(0);
   const [candleOut, setCandleOut] = useState(false);
   const [sliceServed, setSliceServed] = useState(false);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(0);\n  const [pageDirection, setPageDirection] = useState('');\n  const [pageAnimating, setPageAnimating] = useState(false);
   const [giftOpen, setGiftOpen] = useState(false);
   const [micStatus, setMicStatus] = useState('idle');
   const [transitioning, setTransitioning] = useState(false);
@@ -31,6 +31,16 @@ export default function App() {
     if (transitioning || next < 0 || next > 3 || next === scene) return;
     setTransitioning(true);
     window.setTimeout(() => { setScene(next); setTransitioning(false); }, 360);
+  };
+  const turnPage = (direction) => {
+    if (pageAnimating || page + direction < 0 || page + direction >= pages.length) return;
+    setPageDirection(direction > 0 ? 'turn-forward' : 'turn-backward');
+    setPageAnimating(true);
+    window.setTimeout(() => {
+      setPage(current => current + direction);
+      setPageDirection('');
+      setPageAnimating(false);
+    }, 520);
   };
   const blowManually = () => { setCandleOut(true); setMicStatus('done'); };
 
@@ -93,16 +103,43 @@ export default function App() {
     </section>}
 
     {scene === 2 && <section className="scene magazine-scene" key="magazine">
-      <div className="magazine-heading"><p className="eyebrow"><span>02</span> / A FEW PAGES ABOUT YOU</p><h2>Your very own<br/><em>little magazine.</em></h2><p>A keepsake for the little things that make you, you.</p></div>
-      <div className="magazine-layout">
-        <div className="magazine-side-note"><span className="note-star">✳</span><p>THE BIRTHDAY<br/>COLLECTOR'S EDITION</p><i>Volume 01 · Just for you</i></div>
+      <div className="magazine-heading"><p className="eyebrow"><span>02</span> / THE BIRTHDAY EDITION</p><h2>A whole magazine.<br/><em>All about you.</em></h2><p>Every spread is a tiny love letter. Turn slowly.</p></div>
+      <div className="magazine-layout magazine-layout-rich">
+        <aside className="magazine-side-note"><span className="note-star">✳</span><p>THE BIRTHDAY<br/>COLLECTOR'S EDITION</p><i>Vol. 01 · Made just for you</i><div className="side-edition-line"/><small>6 LITTLE CHAPTERS<br/>ONE VERY SPECIAL PERSON</small></aside>
         <div className="magazine-wrap">
-          <div className="book" key={page}>
-            <article className="page left-page"><span className="page-kicker">A SPECIAL EDITION</span><div className="page-art"><div className="sun"/><div className="hill hill-a"/><div className="hill hill-b"/><span>✦</span><small>FOR YOU, ALWAYS</small></div><div className="page-bottomline">A COLLECTION OF LITTLE LOVES</div><small className="page-number">0{page * 2 + 1}</small></article>
-            <article className="page right-page"><span className="page-kicker">{pages[page].label}</span><div className="page-copy"><span className="tiny-heart">♡</span><h3>{pages[page].title}</h3><p>{pages[page].text}</p><div className="page-note">{pages[page].note}</div><div className="flourish">— with love, always —</div></div><small className="page-number">0{page * 2 + 2}</small></article>
+          <div className={`book book-rich ${pageDirection}`} key={page}>
+            <article className={`page left-page spread-left spread-kind-${page}`}>
+              {page === 0 ? <>
+                <div className="cover-photo portrait-art portrait-cover"><span className="photo-grain"/><span className="cover-plant plant-one"/><span className="cover-plant plant-two"/><div className="portrait-silhouette"><i/><b/></div><div className="cover-type"><small>THE BIRTHDAY</small><strong>GIRL</strong><i>special edition</i></div><span className="cover-date">A DAY TO REMEMBER</span></div><div className="cover-bottom"><span>VOLUME 01</span><span>MADE WITH LOVE ♥</span></div>
+              </> : page === 1 ? <>
+                <div className="spread-label">A LITTLE INTRODUCTION</div><div className="full-portrait-art"><div className="portrait-silhouette portrait-sitting"><i/><b/></div><span className="portrait-caption">her kind of magic</span></div><div className="handwritten">simply, wonderfully you ♡</div>
+              </> : page === 2 ? <>
+                <div className="spread-label">THE LITTLE THINGS</div><div className="scrap-collage"><div className="scrap scrap-one"><span className="scrap-photo photo-flowers">✿</span><small>little joys</small></div><div className="scrap scrap-two"><span className="scrap-photo photo-sunset">☼</span><small>golden hours</small></div><div className="scrap scrap-three"><span className="scrap-photo photo-notes">♡</span><small>tiny moments</small></div><span className="tape tape-one"/><span className="tape tape-two"/><span className="doodle-heart">♡</span></div><div className="handwritten">collecting little reasons to smile</div>
+              </> : page === 3 ? <>
+                <div className="spread-label">A DAY WORTH CELEBRATING</div><div className="birthday-collage"><div className="birthday-photo main-photo"><span>✦</span><b>YOUR DAY</b></div><div className="birthday-photo mini-photo"><span>♡</span></div><div className="birthday-sticker">HAPPY<br/>BIRTHDAY!</div></div><div className="page-bottomline">MORE LIFE. MORE LIGHT. MORE YOU.</div>
+              </> : page === 4 ? <>
+                <div className="spread-label">A NOTE, JUST FOR YOU</div><div className="letter-paper"><span className="letter-heart">♡</span><p>Hey you,</p><p>Never forget how much goodness you bring into the world. I hope this new chapter is kind to you, surprises you in the best ways, and gives you reasons to feel proud of the person you are becoming.</p><p className="letter-signoff">always cheering for you, <b>♥</b></p><span className="letter-stamp">FOR YOU<br/>ALWAYS</span></div>
+              </> : <>
+                <div className="end-landscape"><div className="end-sun"/><div className="end-grass grass-a"/><div className="end-grass grass-b"/><div className="end-person"><i/><b/></div><span>THE END</span><small>...for this chapter.</small></div>
+              </>}
+              <small className="page-number">0{page * 2 + 1}</small>
+            </article>
+            <article className={`page right-page spread-right spread-kind-${page}`}>
+              {page === 0 ? <>
+                <div className="cover-inside"><span className="issue-label">A LOVE NOTE IN PRINT</span><span className="inside-star">✦</span><h3>Someone<br/><em>extraordinary.</em></h3><p>A little collection of memories, little things, and all the reasons today deserves to be celebrated.</p><div className="cover-seal">ONE OF<br/>A KIND</div><div className="cover-index"><span>01 — THE LITTLE THINGS</span><span>02 — YOUR KIND OF MAGIC</span><span>03 — A NOTE FOR YOU</span></div></div>
+              </> : <>
+                <div className="spread-label">{pages[page].label}</div><div className="editorial-copy"><span className="editorial-mark">{page===1?'✳':page===2?'♡':page===3?'✦':page===4?'♥':'✧'}</span><h3>{pages[page].title}</h3><p>{pages[page].text}</p><div className="page-note">{pages[page].note}</div><div className="flourish">— with love, always —</div></div>
+                {page === 1 && <div className="tiny-photo-strip"><span/><span/><span/></div>}
+                {page === 2 && <div className="margin-doodle">you make<br/>life sweeter <b>♡</b></div>}
+                {page === 3 && <div className="birthday-ticket"><span>ADMIT ONE</span><b>YOUR<br/>BIRTHDAY</b><small>THE BEST DAY OF THE YEAR</small></div>}
+                {page === 4 && <div className="letter-postmark">SEALED WITH<br/>LOVE <span>♥</span></div>}
+                {page === 5 && <div className="end-quote">“The best stories<br/>keep going.”</div>}
+              </>}
+              <small className="page-number">{page === 5 ? '∞' : '0'+(page*2+2)}</small>
+            </article>
           </div>
-          <div className="page-controls"><button disabled={page === 0} onClick={() => setPage(p => Math.max(0,p-1))} aria-label="Previous spread"><ArrowLeft size={17}/></button><span>0{page + 1} <i>/</i> 0{pages.length}</span><button disabled={page === pages.length-1} onClick={() => setPage(p => Math.min(pages.length-1,p+1))} aria-label="Next spread"><ArrowRight size={17}/></button></div>
-          <p className="microcopy">Turn the pages · a little keepsake, made just for you</p>
+          <div className="page-controls magazine-controls"><button disabled={page===0 || pageAnimating} onClick={() => turnPage(-1)} aria-label="Previous spread"><ArrowLeft size={17}/></button><span><b>0{page+1}</b><i>/</i> 0{pages.length}</span><button disabled={page===pages.length-1 || pageAnimating} onClick={() => turnPage(1)} aria-label="Next spread"><ArrowRight size={17}/></button></div>
+          <div className="magazine-bottom-meta"><span>TURN THE PAGE, KEEP THE MOMENT</span><span>♥</span><span>MADE JUST FOR YOU</span></div>
         </div>
       </div>
       <button className="scene-back" onClick={() => moveScene(1)}><ArrowLeft size={15}/> BACK TO THE CAKE</button><button className="scene-next" onClick={() => moveScene(3)}>ONE LAST SURPRISE <ArrowRight size={16}/></button>
