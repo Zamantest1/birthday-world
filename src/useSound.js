@@ -3,8 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export function useSound(scene) {
   const engine = useRef(null);
   const chapter = useRef(scene);
-  const [muted, setMuted] = useState(false);
-  const mutedRef = useRef(false);
+  const initialMuted = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('birthday-muted') === '1';
+  const [muted, setMuted] = useState(initialMuted);
+  const mutedRef = useRef(initialMuted);
   const tone = useCallback((frequency, duration = 3, volume = .05, delay = 0) => {
     const e = engine.current;
     if (!e || e.context.state !== 'running') return;
@@ -47,6 +48,7 @@ export function useSound(scene) {
   useEffect(() => { chapter.current = scene; }, [scene]);
   const toggle = () => {
     const next = !mutedRef.current; mutedRef.current = next; setMuted(next);
+    try { sessionStorage.setItem('birthday-muted', next ? '1' : '0'); } catch { /* storage may be blocked */ }
     start();
     if (engine.current) engine.current.master.gain.setTargetAtTime(next ? 0 : .55, engine.current.context.currentTime, .3);
   };

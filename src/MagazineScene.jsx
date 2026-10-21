@@ -32,21 +32,32 @@ function makePage(page, left, image) {
   const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 function TurningPage({ from, to, textures, onDone, reduced }) {
-  const group = useRef(); const surface = useRef(); const progress = useRef(0);
-  const direction = to > from ? 1 : -1;
-  const geometry = useMemo(() => { const g = new THREE.PlaneGeometry(1.75, 2.35, 32, 1); g.translate(.875, 0, 0); return g; }, []);
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  const group = useRef(); const progress = useRef(0); const done = useRef(false);
+  const forward = to > from;
+  const geometry = useMemo(() => { const g = new THREE.PlaneGeometry(1.75, 2.35, 40, 1); g.translate(.875, 0, 0); return g; }, []);
+  const frontMap = forward ? textures[from][1] : textures[to][1];
+  const backMap = useMemo(() => {
+    const t = (forward ? textures[to][0] : textures[from][0]).clone();
+    t.wrapS = THREE.RepeatWrapping; t.repeat.x = -1; t.offset.x = 1; t.needsUpdate = true; return t;
+  }, [forward, from, to, textures]);
+  useEffect(() => () => { geometry.dispose(); backMap.dispose(); }, [geometry, backMap]);
   useFrame((_, dt) => {
-    progress.current = Math.min(1, progress.current + dt / (reduced ? .05 : 1.3));
+    progress.current = Math.min(1, progress.current + dt / (reduced ? .05 : 1.35));
     const p = progress.current; const eased = p * p * (3 - 2 * p);
-    group.current.rotation.y = direction === 1 ? -eased * Math.PI : -Math.PI + eased * Math.PI;
+    group.current.rotation.y = forward ? -eased * Math.PI : -Math.PI + eased * Math.PI;
+    const lift = Math.sin(eased * Math.PI);
     const positions = geometry.attributes.position;
-    for (let i = 0; i < positions.count; i++) { const x = positions.getX(i); positions.setZ(i, Math.sin(x / 1.75 * Math.PI) * Math.sin(p * Math.PI) * .27); }
+    for (let i = 0; i < positions.count; i++) {
+      const u = positions.getX(i) / 1.75;
+      positions.setZ(i, (Math.sin(u * Math.PI * .9) * .22 + u * u * (forward ? -.18 : .18)) * lift);
+    }
     positions.needsUpdate = true; geometry.computeVertexNormals();
-    surface.current.material.map = p < .5 ? textures[from][direction === 1 ? 1 : 0] : textures[to][direction === 1 ? 0 : 1];
-    if (p === 1) onDone();
+    if (p === 1 && !done.current) { done.current = true; onDone(); }
   });
-  return <group ref={group} position={[0, 0, .045]}><mesh ref={surface} geometry={geometry} castShadow receiveShadow><meshStandardMaterial map={textures[from][1]} side={THREE.DoubleSide} roughness={.96} /></mesh></group>;
+  return <group ref={group} position={[0, 0, .05]}>
+    <mesh geometry={geometry} castShadow receiveShadow><meshStandardMaterial map={frontMap} side={THREE.FrontSide} roughness={.96} /></mesh>
+    <mesh geometry={geometry} castShadow><meshStandardMaterial map={backMap} side={THREE.BackSide} roughness={.96} /></mesh>
+  </group>;
 }
 export default function MagazineScene({ page, turn, onTurnDone, reduced }) {
   const image = useTexture(spreads[page].photo);
