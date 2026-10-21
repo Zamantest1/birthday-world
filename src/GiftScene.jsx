@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
-import { Glow, Motes, ParticleField, whenFontsReady } from './three-utils.jsx';
+import { Glow, Motes, ParticleField } from './three-utils.jsx';
 
 const W = 1.3; const H = 1; const T = .04;
 const smooth = (a, b, x) => { const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -18,57 +18,82 @@ function Bow({ bowRef }) {
   </group>;
 }
 
-function Letter({ visible, reduced }) {
-  const group = useRef(); const paper = useRef(); const fold = useRef();
+const LETTER_COPY = {
+  heading: 'A Little Letter for You',
+  paragraphs: [
+    'You are my favourite kind of wonderful.',
+    'Today, tomorrow, and all the days after, I hope life brings you little moments of happiness, reasons to smile, and memories worth keeping.',
+    'May this new chapter of your life be filled with warmth, beautiful surprises, peaceful days, and everything your heart has been wishing for.',
+    'You deserve to feel loved, appreciated, and celebrated, not just today, but every day.',
+    'No matter where life takes you, I hope you always remember how special you are.',
+  ],
+  closing: 'With all my love, always.',
+};
+
+function Letter({ visible, reduced, mobile }) {
+  const group = useRef(); const paper = useRef(); const flap = useRef();
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 1600;
     const c = canvas.getContext('2d');
     const grad = c.createLinearGradient(0, 0, 1200, 1600);
     grad.addColorStop(0, '#fffaf4'); grad.addColorStop(.55, '#fff5ee'); grad.addColorStop(1, '#f4dfdf');
     c.fillStyle = grad; c.fillRect(0, 0, 1200, 1600);
-    for (let i = 0; i < 5000; i++) { c.fillStyle = `rgba(117,64,82,${(i % 4) * .012})`; c.fillRect((i * 71) % 1200, (i * 137) % 1600, 2, 2); }
+    for (let i = 0; i < 4200; i++) { c.fillStyle = `rgba(117,64,82,${(i % 4) * .009})`; c.fillRect((i * 71) % 1200, (i * 137) % 1600, 2, 2); }
     c.strokeStyle = '#d99ab1'; c.lineWidth = 6; c.strokeRect(48, 48, 1104, 1504);
     c.strokeStyle = '#ead0d4'; c.lineWidth = 2; c.strokeRect(68, 68, 1064, 1464);
-    c.textAlign = 'center'; c.fillStyle = '#c27d96'; c.font = '64px Georgia'; c.fillText('♡', 600, 190);
-    c.fillStyle = '#754052'; c.font = 'italic 66px Georgia'; c.fillText('A little letter for you', 600, 300);
-    c.fillStyle = '#553142'; c.font = '42px Georgia';
-    const lines = ['You are my favourite', 'kind of wonderful.', '', 'Today, tomorrow, and all', 'the days after.'];
-    lines.forEach((line, i) => c.fillText(line, 600, 490 + i * 86));
-    c.fillStyle = '#c27d96'; c.fillRect(520, 1010, 160, 3);
-    c.fillStyle = '#754052'; c.font = 'italic 40px Georgia'; c.fillText('With all my love, always.', 600, 1110);
-    c.fillStyle = '#b98a9d'; c.font = '32px Georgia'; c.fillText('♡', 600, 1370);
+    c.textAlign = 'center'; c.fillStyle = '#c27d96'; c.font = '58px Georgia'; c.fillText('♡', 600, 145);
+    c.fillStyle = '#754052'; c.font = 'italic 59px Georgia'; c.fillText(LETTER_COPY.heading, 600, 235);
+    c.fillStyle = '#553142'; c.font = '36px Georgia';
+    const wrap = (text, maxWidth) => {
+      const words = text.split(/\\s+/); const lines = []; let line = '';
+      for (const word of words) {
+        const test = line ? line + ' ' + word : word;
+        if (c.measureText(test).width > maxWidth && line) { lines.push(line); line = word; } else line = test;
+      }
+      if (line) lines.push(line); return lines;
+    };
+    let y = 355;
+    for (const paragraph of LETTER_COPY.paragraphs) {
+      const lines = wrap(paragraph, 900);
+      for (const line of lines) { c.fillText(line, 600, y); y += 48; }
+      y += 28;
+    }
+    c.fillStyle = '#c27d96'; c.fillRect(520, y + 2, 160, 3); y += 64;
+    c.fillStyle = '#754052'; c.font = 'italic 36px Georgia';
+    c.fillText(LETTER_COPY.closing, 600, Math.min(y + 8, 1460));
+    c.fillStyle = '#b98a9d'; c.font = '30px Georgia'; c.fillText('♡', 600, 1490);
     const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
   useFrame((state, dt) => {
     const current = group.current.userData.progress ?? 0;
-    const next = THREE.MathUtils.damp(current, visible ? 1 : 0, reduced ? 12 : 1.45, dt);
+    const next = THREE.MathUtils.damp(current, visible ? 1 : 0, reduced ? 12 : 1.6, dt);
     group.current.userData.progress = next;
-    group.current.visible = next > .01;
-    // The physical letter rises from inside the gift, rotates upright, then settles in front of the box.
-    group.current.position.y = .35 + next * 1.55;
-    group.current.position.z = .55 + next * .42;
-    group.current.rotation.x = -.95 + next * .78;
-    group.current.rotation.y = Math.sin(state.clock.elapsedTime * .45) * .018;
-    group.current.scale.setScalar(.12 + next * .88);
-    paper.current.material.opacity = Math.min(1, next * 1.8);
-    fold.current.rotation.x = (1 - smooth(0, .85, next)) * -1.45;
+    group.current.visible = next > .005;
+    // Rise from the box cavity, unfold, and settle just above the open box.
+    group.current.position.y = .12 + next * (mobile ? 1.12 : 1.42);
+    group.current.position.z = .34 + next * .52;
+    group.current.rotation.x = -.28 - (1 - smooth(0, .9, next)) * .62;
+    group.current.rotation.y = Math.sin(state.clock.elapsedTime * .35) * .008;
+    group.current.scale.setScalar(.08 + next * (mobile ? .78 : .9));
+    paper.current.material.opacity = Math.min(1, next * 2.2);
+    flap.current.rotation.x = (1 - smooth(.12, .88, next)) * -1.25;
   });
-  return <group ref={group} position={[0, .35, .55]} visible={false}>
-    <mesh ref={paper} castShadow receiveShadow>
-      <boxGeometry args={[2.05, 2.72, .025, 1, 1, 1]} />
-      <meshStandardMaterial map={texture} color="#fffaf5" roughness={.88} metalness={0} transparent opacity={0} side={THREE.DoubleSide} />
+  return <group ref={group} position={[0, .12, .34]} visible={false}>
+    <mesh ref={paper} position={[0, 0, 0]} castShadow receiveShadow>
+      <planeGeometry args={[2.05, 2.72, 1, 1]} />
+      <meshStandardMaterial map={texture} transparent opacity={0} side={THREE.DoubleSide} roughness={.92} metalness={0} polygonOffset polygonOffsetFactor={-1} />
     </mesh>
-    <group ref={fold} position={[0, 1.36, .018]}>
-      <mesh position={[0, -.34, .004]} castShadow>
-        <boxGeometry args={[2.02, .68, .008]} />
-        <meshStandardMaterial color="#f4dfe3" roughness={.9} />
+    <mesh position={[0, 0, -.018]} castShadow receiveShadow>
+      <boxGeometry args={[2.05, 2.72, .035]} />
+      <meshStandardMaterial color="#e4c6c9" roughness={.94} />
+    </mesh>
+    <group ref={flap} position={[0, 1.35, .02]}>
+      <mesh position={[0, -.34, .025]} castShadow>
+        <planeGeometry args={[2.02, .68]} />
+        <meshStandardMaterial color="#f4dfe3" side={THREE.DoubleSide} roughness={.9} />
       </mesh>
     </group>
-    <mesh position={[0, 0, -.018]} receiveShadow>
-      <boxGeometry args={[2.08, 2.75, .018]} />
-      <meshStandardMaterial color="#e4c6c9" roughness={.95} />
-    </mesh>
   </group>;
 }
 
@@ -118,6 +143,6 @@ export default function GiftScene({ open, reduced, mobile }) {
       </group>
       <Motes active={open} mode="loop" origin={[0, H - .1, 0]} spread={.45} height={2.6} count={mobile ? 50 : 110} speed={.6} size={.05} />
     </group>
-    <Letter visible={open} reduced={reduced} />
+    <Letter visible={open} reduced={reduced} mobile={mobile} />
   </group>;
 }
