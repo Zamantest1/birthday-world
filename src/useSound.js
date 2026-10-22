@@ -1,12 +1,79 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const TARGET_BG_VOLUME = 0.36; // Warm, balanced ambient volume
+const DUCKED_BG_VOLUME = 0.10; // Ducked background volume during birthday tune
+
 export function useSound(scene) {
   const engine = useRef(null);
   const chapter = useRef(scene);
+  const bgAudioRef = useRef(null);
+  const fadeTimer = useRef(null);
+  const duckTimer = useRef(null);
   const initialMuted = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('birthday-muted') === '1';
   const [muted, setMuted] = useState(initialMuted);
   const mutedRef = useRef(initialMuted);
   const lastPaperTime = useRef(0);
+
+  // Initialize continuous background audio track
+  useEffect(() => {
+    if (!bgAudioRef.current && typeof window !== 'undefined') {
+      const audio = new Audio('/audio/background-music.mp3');
+      audio.loop = true;
+      audio.preload = 'auto';
+      audio.volume = mutedRef.current ? 0 : TARGET_BG_VOLUME;
+
+      // Fail-safe continuous loop listener across all mobile & desktop browsers
+      const handleEnded = () => {
+        try {
+          audio.currentTime = 0;
+          if (!mutedRef.current) {
+            audio.play().catch(() => {});
+          }
+        } catch { /* loop recovery */ }
+      };
+      audio.addEventListener('ended', handleEnded);
+
+      // Resume audio if tab becomes active after backgrounding
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && !mutedRef.current && bgAudioRef.current) {
+          if (bgAudioRef.current.paused) {
+            bgAudioRef.current.play().catch(() => {});
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      bgAudioRef.current = audio;
+
+      return () => {
+        audio.removeEventListener('ended', handleEnded);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+  }, []);
+
+  // Smooth volume fading / ducking helper
+  const fadeAudio = useCallback((audio, targetVol, durationMs = 500) => {
+    if (!audio) return;
+    if (fadeTimer.current) cancelAnimationFrame(fadeTimer.current);
+    const startVol = audio.volume;
+    const startTime = performance.now();
+    const diff = targetVol - startVol;
+    if (Math.abs(diff) < 0.005) {
+      audio.volume = targetVol;
+      return;
+    }
+    const step = () => {
+      const elapsed = performance.now() - startTime;
+      const p = Math.min(1, elapsed / durationMs);
+      const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      audio.volume = Math.max(0, Math.min(1, startVol + diff * eased));
+      if (p < 1) {
+        fadeTimer.current = requestAnimationFrame(step);
+      }
+    };
+    fadeTimer.current = requestAnimationFrame(step);
+  }, []);
 
   const tone = useCallback((frequency, duration = 3, volume = .05, delay = 0) => {
     const e = engine.current;
@@ -121,49 +188,62 @@ export function useSound(scene) {
         const master = context.createGain();
         master.gain.value = mutedRef.current ? 0 : 0.85;
         master.connect(context.destination);
-        engine.current = { context, master, timer: null };
-        let beat = 0;
-        const phrase = () => {
-          const notes = [261.63, 329.63, 392, 493.88, 440, 392, 329.63, 293.66];
-          tone(notes[beat % notes.length], 4, .055);
-          if (beat % 4 === 0) tone([130.81, 110, 87.31, 98][Math.floor(beat / 4) % 4], 7, .065);
-          if (chapter.current > 1 && beat % 2 === 0) tone(notes[(beat + 2) % 8] * 2, 3, .017, .45);
-          beat++;
-        };
-        await context.resume();
-        phrase();
-        engine.current.timer = setInterval(phrase, 1700);
-      } else await engine.current.context.resume();
-    } catch { /* Audio is optional */ }
-  }, [tone]);
+        engine.current = { context, master };
+      }
+      if (engine.current.context.state === 'suspended') {
+        await engine.current.context.resume();
+      }
 
-    const birthdayTune = useCallback(() => {
+      // Start continuous background audio track with fade-in
+      const bg = bgAudioRef.current;
+      if (bg && !mutedRef.current) {
+        if (bg.paused) {
+          bg.volume = 0;
+          await bg.play().catch(() => {});
+          fadeAudio(bg, TARGET_BG_VOLUME, 1000);
+        }
+      }
+    } catch { /* Audio is non-blocking */ }
+  }, [fadeAudio]);
+
+  const birthdayTune = useCallback(() => {
     try {
       const e = engine.current;
       if (!e || e.context.state !== 'running' || mutedRef.current) return;
       const ctx = e.context;
       const baseNow = ctx.currentTime;
 
-      // Recognized "Happy Birthday to you" melodic phrase:
+      // 1. Duck background music gracefully so birthday melody is prominent
+      const bg = bgAudioRef.current;
+      if (bg && !mutedRef.current) {
+        fadeAudio(bg, DUCKED_BG_VOLUME, 450);
+        if (duckTimer.current) clearTimeout(duckTimer.current);
+        duckTimer.current = setTimeout(() => {
+          if (!mutedRef.current && bgAudioRef.current) {
+            fadeAudio(bgAudioRef.current, TARGET_BG_VOLUME, 1400);
+          }
+        }, 7800);
+      }
+
+      // 2. Play warm music-box chime harmonics
       // G4 G4 A4 G4 C5 B4 | G4 G4 A4 G4 D5 C5
       const notes = [
-        { f: 392.00, t: 0.00, d: 0.32, v: 0.24 }, // Hap-
-        { f: 392.00, t: 0.34, d: 0.32, v: 0.24 }, // py
-        { f: 440.00, t: 0.68, d: 0.58, v: 0.26 }, // birth-
-        { f: 392.00, t: 1.30, d: 0.58, v: 0.25 }, // day
-        { f: 523.25, t: 1.92, d: 0.62, v: 0.28 }, // to
-        { f: 493.88, t: 2.56, d: 1.05, v: 0.26 }, // you
-        { f: 392.00, t: 3.75, d: 0.32, v: 0.24 }, // Hap-
-        { f: 392.00, t: 4.09, d: 0.32, v: 0.24 }, // py
-        { f: 440.00, t: 4.43, d: 0.58, v: 0.26 }, // birth-
-        { f: 392.00, t: 5.05, d: 0.58, v: 0.25 }, // day
-        { f: 587.33, t: 5.67, d: 0.62, v: 0.30 }, // to
-        { f: 523.25, t: 6.31, d: 1.35, v: 0.30 }, // you!
+        { f: 392.00, t: 0.00, d: 0.32, v: 0.28 }, // Hap-
+        { f: 392.00, t: 0.34, d: 0.32, v: 0.28 }, // py
+        { f: 440.00, t: 0.68, d: 0.58, v: 0.30 }, // birth-
+        { f: 392.00, t: 1.30, d: 0.58, v: 0.29 }, // day
+        { f: 523.25, t: 1.92, d: 0.62, v: 0.33 }, // to
+        { f: 493.88, t: 2.56, d: 1.05, v: 0.30 }, // you
+        { f: 392.00, t: 3.75, d: 0.32, v: 0.28 }, // Hap-
+        { f: 392.00, t: 4.09, d: 0.32, v: 0.28 }, // py
+        { f: 440.00, t: 4.43, d: 0.58, v: 0.30 }, // birth-
+        { f: 392.00, t: 5.05, d: 0.58, v: 0.29 }, // day
+        { f: 587.33, t: 5.67, d: 0.62, v: 0.34 }, // to
+        { f: 523.25, t: 6.31, d: 1.45, v: 0.34 }, // you!
       ];
 
       notes.forEach(({ f, t, d, v }) => {
         const now = baseNow + t;
-        // Warm music-box chime harmonics (Fundamental + 2nd harmonic + 3rd harmonic bell sparkle)
         const harmonics = [
           { mul: 1, gainRatio: 1.0, type: 'sine' },
           { mul: 2, gainRatio: 0.38, type: 'sine' },
@@ -197,7 +277,7 @@ export function useSound(scene) {
         });
       });
     } catch { /* Audio is non-blocking */ }
-  }, []);
+  }, [fadeAudio]);
 
   const effect = useCallback((kind) => {
     if (kind === 'page') {
@@ -232,19 +312,58 @@ export function useSound(scene) {
 
   useEffect(() => { chapter.current = scene; }, [scene]);
 
+  // First interaction gesture listener to seamlessly unlock audio in modern browsers
+  useEffect(() => {
+    const handleFirstGesture = () => {
+      start();
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
+    window.addEventListener('click', handleFirstGesture, { passive: true });
+    window.addEventListener('touchstart', handleFirstGesture, { passive: true });
+    window.addEventListener('keydown', handleFirstGesture, { passive: true });
+    return () => {
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
+  }, [start]);
+
   const toggle = () => {
     const next = !mutedRef.current;
     mutedRef.current = next;
     setMuted(next);
     try { sessionStorage.setItem('birthday-muted', next ? '1' : '0'); } catch { /* storage */ }
-    start();
-    if (engine.current) engine.current.master.gain.setTargetAtTime(next ? 0 : 0.85, engine.current.context.currentTime, .3);
+
+    const bg = bgAudioRef.current;
+    if (bg) {
+      if (next) {
+        fadeAudio(bg, 0, 180);
+        setTimeout(() => { if (mutedRef.current && bgAudioRef.current) bgAudioRef.current.pause(); }, 200);
+      } else {
+        bg.volume = 0;
+        bg.play().then(() => {
+          fadeAudio(bg, TARGET_BG_VOLUME, 280);
+        }).catch(() => {});
+      }
+    }
+
+    if (engine.current) {
+      engine.current.master.gain.setTargetAtTime(next ? 0 : 0.85, engine.current.context.currentTime, .15);
+    }
   };
 
   useEffect(() => () => {
+    if (fadeTimer.current) cancelAnimationFrame(fadeTimer.current);
+    if (duckTimer.current) clearTimeout(duckTimer.current);
+    if (bgAudioRef.current) {
+      bgAudioRef.current.pause();
+      bgAudioRef.current.src = '';
+      bgAudioRef.current = null;
+    }
     const e = engine.current;
     if (e) {
-      clearInterval(e.timer);
       e.context.close().catch(() => {});
       engine.current = null;
     }

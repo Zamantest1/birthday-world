@@ -9,21 +9,56 @@ const smooth = (a, b, x) => { const t = THREE.MathUtils.clamp((x - a) / (b - a),
 function sector(radius, height, start, end) {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
-  for (let i = 0; i <= 100; i++) { const a = start + (end - start) * i / 100; shape.lineTo(Math.sin(a) * radius, Math.cos(a) * radius); }
+  for (let i = 0; i <= 60; i++) { const a = start + (end - start) * i / 60; shape.lineTo(Math.sin(a) * radius, Math.cos(a) * radius); }
   shape.lineTo(0, 0);
-  const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: .012, bevelThickness: .012, curveSegments: 64 });
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: .012, bevelThickness: .012, curveSegments: 36 });
   geometry.rotateX(-Math.PI / 2);
   return geometry;
 }
+let cachedFrostingTexture = null;
+
+function getFrostingTexture() {
+  if (cachedFrostingTexture) return cachedFrostingTexture;
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 256;
+  const c = canvas.getContext('2d');
+  const imgData = c.createImageData(256, 256);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = 170;
+    data[i + 1] = 170;
+    data[i + 2] = 170;
+    data[i + 3] = 255;
+  }
+  let seed = 12;
+  for (let i = 0; i < 18000; i++) {
+    seed = (seed * 16807) % 2147483647;
+    const x = seed % 256;
+    seed = (seed * 16807) % 2147483647;
+    const y = seed % 256;
+    const alpha = (i % 5) * 0.025;
+    for (let dy = 0; dy < 2; dy++) {
+      const py = (y + dy) % 256;
+      for (let dx = 0; dx < 2; dx++) {
+        const px = (x + dx) % 256;
+        const idx = (py * 256 + px) * 4;
+        data[idx] = Math.min(255, data[idx] + 255 * alpha);
+        data[idx + 1] = Math.min(255, data[idx + 1] + 255 * alpha);
+        data[idx + 2] = Math.min(255, data[idx + 2] + 255 * alpha);
+      }
+    }
+  }
+  c.putImageData(imgData, 0, 0);
+  const t = new THREE.CanvasTexture(canvas);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(3, 2);
+  cachedFrostingTexture = t;
+  return t;
+}
+
 function useFrostingTexture() {
-  const texture = useMemo(() => {
-    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 256;
-    const c = canvas.getContext('2d'); c.fillStyle = '#aaa'; c.fillRect(0, 0, 256, 256);
-    let seed = 12;
-    for (let i = 0; i < 18000; i++) { seed = (seed * 16807) % 2147483647; const x = seed % 256; seed = (seed * 16807) % 2147483647; const y = seed % 256; c.fillStyle = `rgba(255,255,255,${(i % 5) * .025})`; c.fillRect(x, y, 2, 2); }
-    const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 2); return t;
-  }, []);
-  useEffect(() => () => texture.dispose(), [texture]); return texture;
+  return useMemo(() => getFrostingTexture(), []);
 }
 function IcingWriting() {
   const texture = useMemo(() => {

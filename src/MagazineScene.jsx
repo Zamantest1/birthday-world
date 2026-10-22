@@ -21,150 +21,145 @@ export const magazinePhotoSlots = {
 export const spreads = [
   {
     label: 'THE COVER',
-    title: 'Amina, in her own little world',
-    caption: '7 November · Kind Heart, Cute Charm, A Little Fire',
-    lines: [
-      'A kind heart, a cute little charm,',
-      'and a spark that makes her',
-      'unmistakably herself.',
+    title: 'In her own little world',
+    badge: 'KIND HEART · CUTE CHARM · A LITTLE FIRE',
+    subBadge: '7 November · The Birthday Edition',
+    caption: '7 November · The Birthday Edition',
+    paragraphs: [
+      'Seven November. Another year of being you.',
+      'A kind heart, a little stubbornness, and a spark that is unmistakably yours.',
     ],
     note: 'The Birthday Edition',
-    end: 'A celebration made by hand for you.',
+    closing: 'Made with love, especially for you.',
     photo: magazinePhotoSlots.p1_cover,
     archetype: 'cover',
   },
   {
     label: '01 / A REASON TO CELEBRATE',
-    title: 'A day worth celebrating',
-    caption: 'Today, the world gets another reason to celebrate you.',
-    lines: [
-      'Some people bring warmth into',
-      'the room just by being in it.',
-      'You have always had that gentle light.',
+    title: 'The way you make a room feel different',
+    caption: 'A soft heart and a smile that feels like you.',
+    paragraphs: [
+      'There is something lovely about the way you can be completely yourself. You can be sweet one moment, stubborn the next, and funny without even trying.',
+      'It is not about always getting things right. It is about the little things that make you you, and the warmth people get to know when they spend time with you.',
     ],
-    note: 'Happy Birthday Amina ♡',
-    end: 'May your smile stay this bright.',
+    note: 'Happy Birthday, Amina ♡',
+    closing: 'Keep finding reasons to smile.',
     photo: magazinePhotoSlots.p2_celebrate,
     archetype: 'polaroid',
   },
   {
-    label: '02 / OUR JOURNEY',
-    title: 'Some stories keep unfolding',
-    caption: 'More than six years of shared moments.',
-    lines: [
-      'More than six years of laughter,',
-      'quiet days, and growing together.',
-      'Not every chapter was simple,',
-      'yet we kept finding our way back.',
+    label: '02 / SIX YEARS & COUNTING',
+    title: 'Finding our way through the years',
+    watermark: '6+',
+    caption: 'More than six years of shared steps.',
+    paragraphs: [
+      'More than six years is a lot of life to share with someone.',
+      'We have had good days, difficult days, moments when things felt simple, and others when they really didn\'t. We have both had things to figure out along the way.',
+      'Whatever those years have looked like, they matter to me. I will always value the time we have shared and everything it has taught me.',
     ],
-    note: 'Through every chapter and turn,',
-    end: 'I cherish the time we have shared.',
+    note: 'More than six years, and a story that has meant a lot.',
+    closing: 'Some chapters stay important, whatever comes next.',
     photo: magazinePhotoSlots.p3_journey,
     archetype: 'journey',
   },
   {
     label: '03 / HER SPIRIT',
-    title: 'A little fire, a lot of heart',
-    caption: 'So uniquely, wonderfully you.',
-    lines: [
-      'A little fire in her spirit,',
-      'a whole lot of kindness in her heart.',
-      'Strong-minded, deeply caring,',
-      'and always true to herself.',
+    title: 'A little fire, a whole lot of heart',
+    caption: 'Softness, spirit, and plenty of personality.',
+    paragraphs: [
+      'You have a gentle side, a caring heart, and a stubborn streak that definitely makes an appearance when you feel strongly about something.',
+      'Honestly, that mix is part of what makes you so recognisably you. You don\'t have to make yourself smaller or change the things that make you different just to fit someone else\'s idea of who you should be.',
     ],
-    note: 'Never change who you are,',
-    end: 'that spark is what makes you special.',
+    note: 'Never stop being yourself.',
+    closing: 'Your own kind of charm is more than enough.',
     photo: magazinePhotoSlots.p4_spirit,
     archetype: 'traits',
   },
   {
-    label: '04 / THE LITTLE THINGS',
-    title: 'The beauty is in the details',
-    caption: 'Little moments, big happiness ♡',
-    lines: [
-      'Your expressions, your tiny habits,',
-      'the sudden bursts of laughter,',
-      'and the quiet ways you show care.',
-      'It is the little things that stay.',
+    label: '04 / ORDINARY DAYS',
+    title: 'The little things that matter',
+    caption: 'Not every meaningful moment needs a big occasion.',
+    paragraphs: [
+      'Sometimes, it is the ordinary parts of life that mean the most.',
+      'The conversations that go on longer than expected. The laughter over something silly. The comfort of being able to talk about a completely unimportant thing and still enjoy the moment.',
+      'Not everything meaningful has to be grand. Sometimes, the smallest moments are the ones that make a time in your life feel special.',
     ],
-    note: 'In between the big days,',
-    end: 'are the memories I hold close.',
+    note: 'It is often the little things.',
+    closing: 'And the feelings attached to them.',
     photo: magazinePhotoSlots.p5_details,
     archetype: 'candid',
   },
   {
-    label: '05 / SCORPIO MAGIC',
-    title: 'A Scorpio kind of magic',
+    label: '05 / A NOVEMBER SOUL',
+    title: 'A little November magic',
     theme: 'scorpio',
-    caption: '♏ 7 November · Deep, intuitive, and radiant.',
-    lines: [
-      'Born under the quiet November sky,',
-      'with a mind that feels deeply',
-      'and a spirit that burns bright.',
-      'A little mystery, a lot of magic.',
+    astrologicalMark: '♏',
+    caption: '♏ 7 November · A birthday with its own little identity.',
+    paragraphs: [
+      'November will always have a special place on the calendar because it is the month you were born.',
+      'The Scorpio theme gives this little edition its own character: a hint of mystery, a little intensity, and a reminder that everyone has their own way of seeing and feeling the world.',
+      'But more than any star sign, I hope you keep discovering what matters to you and making room for the things that make you happy.',
     ],
-    note: '7 November',
-    end: 'A date worth remembering, always.',
+    note: 'Born on 7 November.',
+    closing: 'A day worth celebrating, simply because it is yours.',
     photo: magazinePhotoSlots.p6_scorpio,
     archetype: 'scorpio',
   },
   {
     label: '06 / THROUGH EVERY SEASON',
-    title: 'Every chapter has its place',
-    caption: 'Different seasons, same us ♡',
-    lines: [
-      'Through sunny days and quiet storms,',
-      'warm summer afternoons and winter chills,',
-      'we have weathered so much together.',
-      'Every chapter had its own meaning.',
+    title: 'Growing up along the way',
+    caption: 'Every year brings a little more perspective.',
+    paragraphs: [
+      'We were younger when our story began. Six years later, there is more life behind us and more to learn about the people we are becoming.',
+      'Growing up is not always straightforward. Plans change, perspectives shift, and sometimes we understand things differently than we once did.',
+      'I hope you keep growing into a life that feels right for you. I respect that journey, and I hope the years ahead bring you plenty to feel proud of.',
     ],
-    note: 'No matter how the seasons change,',
-    end: 'gratitude remains constant.',
+    note: 'There is still so much ahead.',
+    closing: 'Keep becoming the person you want to be.',
     photo: magazinePhotoSlots.p7_seasons,
     archetype: 'seasons',
   },
   {
     label: '07 / THE HORIZON',
-    title: 'Your story is still becoming',
-    caption: 'Happiness · Opportunities · Beautiful Days',
-    lines: [
-      'You have so much life ahead of you,',
-      'so many dreams waiting to unfold.',
-      'May this year bring gentle beginnings,',
-      'peace of mind, and the strength to fly.',
+    title: 'A future full of possibilities',
+    caption: 'Your next chapter belongs to you.',
+    paragraphs: [
+      'There will be decisions to make and things that take time to figure out. Life rarely gives us every answer at once.',
+      'Whatever the coming months bring, especially as December approaches, I hope you give yourself the time and space to choose what feels right.',
+      'I want to see you happy, doing well in your work, and building a life you can genuinely feel proud of. You deserve the chance to grow in your own direction.',
     ],
-    note: 'Keep dreaming, keep growing,',
-    end: 'the best is yet to come.',
+    note: 'Take your time. Trust yourself.',
+    closing: 'May the road ahead bring you clarity and peace.',
     photo: magazinePhotoSlots.p8_future,
     archetype: 'horizon',
   },
   {
     label: '08 / A NOTE FOR YOU',
-    title: 'A little note for you',
-    caption: 'Always wishing you the very best.',
-    lines: [
-      'In a world that is always rushing,',
-      'I hope you always remember your worth.',
-      'Whatever choices and paths come next,',
-      'I want you to be genuinely happy.',
+    title: 'What I truly wish for you',
+    caption: 'A few wishes, from the heart.',
+    paragraphs: [
+      'I hope this next year brings you more reasons to feel good about your life.',
+      'I hope your efforts pay off, your worries become easier to carry, and you find people and places where you can be completely comfortable being yourself.',
+      'I hope you have good health, meaningful opportunities, peaceful days, and moments that remind you how much there is to look forward to.',
+      'Most of all, I hope you are happy in a way that feels real to you.',
     ],
-    note: 'You deserve peace and gentleness,',
-    end: 'and a life full of warmth.',
+    note: 'You deserve good things, too.',
+    closing: 'Wishing you the very best, always.',
     photo: magazinePhotoSlots.p9_note,
     archetype: 'stationery',
   },
   {
     label: 'THE FINALE',
-    title: 'Wherever life takes you',
+    title: 'Today is all about you',
     caption: 'Happy Birthday, Amina ♡',
-    lines: [
-      'Wherever your journey leads,',
-      'walk forward with your head held high.',
-      'Celebrate today with all your heart.',
-      'Happy Birthday, Amina.',
+    paragraphs: [
+      'Today, you don\'t need to have everything figured out.',
+      'It is your birthday. Take a moment to enjoy it, do something that makes you smile, and appreciate another year of being here and becoming who you are.',
+      'I hope you feel celebrated, cared for, and excited about the possibilities waiting for you.',
+      'You deserve a lovely birthday and a year filled with things worth looking forward to.',
     ],
-    note: 'With warmth, respect, and care,',
-    end: 'Always wishing you happiness.',
+    note: 'With genuine warmth and care.',
+    closing: 'Happy Birthday, Amina. Enjoy your day.',
     photo: magazinePhotoSlots.p10_finale,
     archetype: 'finale',
   },
@@ -183,30 +178,65 @@ function drawCoverImage(c, image, dx, dy, dw, dh) {
   c.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
 
+// Text word wrap helper for canvas
+function wrapText(c, text, maxWidth) {
+  const words = text.split(/\s+/);
+  const lines = [];
+  let currentLine = '';
+  for (const word of words) {
+    const test = currentLine ? currentLine + ' ' + word : word;
+    if (c.measureText(test).width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = test;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
+// Paragraph block renderer for canvas
+function drawParagraphs(c, paragraphs, x, startY, maxWidth, lineHeight, paragraphSpacing, align = 'center') {
+  c.textAlign = align;
+  let y = startY;
+  for (const p of paragraphs) {
+    const lines = wrapText(c, p, maxWidth);
+    for (const line of lines) {
+      c.fillText(line, x, y);
+      y += lineHeight;
+    }
+    y += paragraphSpacing;
+  }
+  return y;
+}
+
 function makePage(page, left, image) {
   const canvas = document.createElement('canvas');
-  canvas.width = 768;
-  canvas.height = 1024;
+  canvas.width = 1152;
+  canvas.height = 1536;
   const c = canvas.getContext('2d');
+  c.scale(1.5, 1.5);
   const data = spreads[page];
   const isScorpio = data.theme === 'scorpio';
   const arch = data.archetype || 'default';
 
   // 1. Base paper backgrounds with organic texture
   if (isScorpio) {
+    // Light & elegant celestial palette: soft lavender, cream, and lilac
     const grad = c.createLinearGradient(0, 0, 768, 1024);
-    grad.addColorStop(0, '#150b20');
-    grad.addColorStop(0.5, '#261336');
-    grad.addColorStop(1, '#1a0e28');
+    grad.addColorStop(0, '#fbf5fd');
+    grad.addColorStop(0.5, '#f4eaf9');
+    grad.addColorStop(1, '#f8eff5');
     c.fillStyle = grad;
     c.fillRect(0, 0, 768, 1024);
 
-    // Starlight dust
-    for (let i = 0; i < 450; i++) {
+    // Subtle golden and lavender celestial dust
+    for (let i = 0; i < 55; i++) {
       const sx = ((i * 123.45) % 740) + 14;
       const sy = ((i * 321.67) % 996) + 14;
-      const r = (i % 6 === 0) ? 1.7 : 0.85;
-      c.fillStyle = (i % 8 === 0) ? 'rgba(235, 200, 165, 0.85)' : 'rgba(215, 165, 205, 0.55)';
+      const r = (i % 6 === 0) ? 1.5 : 0.8;
+      c.fillStyle = (i % 8 === 0) ? 'rgba(215, 175, 110, 0.45)' : 'rgba(165, 125, 185, 0.35)';
       c.beginPath();
       c.arc(sx, sy, r, 0, Math.PI * 2);
       c.fill();
@@ -217,15 +247,15 @@ function makePage(page, left, image) {
     c.fillRect(0, 0, 768, 1024);
 
     // Warm organic paper grain
-    for (let i = 0; i < 5500; i++) {
-      c.fillStyle = `rgba(90, 60, 75, ${(i % 3) * 0.007})`;
-      c.fillRect((i * 83.13) % 768, (i * 37.31) % 1024, 2, 2);
+    for (let i = 0; i < 80; i++) {
+      c.fillStyle = `rgba(90, 60, 75, ${(i % 3) * 0.009})`;
+      c.fillRect((i * 83.13) % 768, (i * 37.31) % 1024, 3, 3);
     }
   }
 
   // 2. Editorial Header
   if (arch !== 'cover' || !left) {
-    c.fillStyle = isScorpio ? '#d4a0c8' : '#8b6a7a';
+    c.fillStyle = isScorpio ? '#6b4a7e' : '#8b6a7a';
     c.font = '15px sans-serif';
     c.textAlign = 'center';
     const headerTitle = left
@@ -234,7 +264,7 @@ function makePage(page, left, image) {
     c.fillText(headerTitle, 384, 76);
 
     // Hairline divider rule under header
-    c.strokeStyle = isScorpio ? 'rgba(212, 160, 200, 0.35)' : 'rgba(217, 194, 172, 0.55)';
+    c.strokeStyle = isScorpio ? 'rgba(107, 74, 126, 0.25)' : 'rgba(217, 194, 172, 0.55)';
     c.beginPath();
     c.moveTo(60, 102);
     c.lineTo(708, 102);
@@ -335,30 +365,30 @@ function makePage(page, left, image) {
 
       c.fillStyle = '#8b6a7a';
       c.font = '13px sans-serif';
-      c.fillText('CHAPTER 02 · SHARED MEMORIES', 384, 922);
+      c.fillText('02 / SIX YEARS & COUNTING', 384, 922);
     } else if (arch === 'scorpio') {
-      // Celestial starry photo with gold flourishes
+      // Light & elegant celestial photo frame with subtle gold corner flourishes
       const dx = 84, dy = 140, dw = 600, dh = 700;
       drawCoverImage(c, image, dx, dy, dw, dh);
 
-      c.strokeStyle = 'rgba(235, 195, 140, 0.55)';
+      c.strokeStyle = 'rgba(201, 165, 120, 0.65)';
       c.lineWidth = 2;
       c.strokeRect(dx, dy, dw, dh);
 
       // Constellation node lines
-      c.strokeStyle = 'rgba(235, 195, 140, 0.4)';
+      c.strokeStyle = 'rgba(180, 140, 170, 0.45)';
       c.setLineDash([4, 4]);
       c.beginPath();
       c.moveTo(dx + 20, dy + 20); c.lineTo(dx + 70, dy + 50); c.lineTo(dx + 110, dy + 30);
       c.stroke();
       c.setLineDash([]);
 
-      c.fillStyle = '#f5eaff';
-      c.font = 'italic 27px Georgia';
+      c.fillStyle = '#5c3d4b';
+      c.font = 'italic 26px Georgia';
       c.textAlign = 'center';
       c.fillText(data.caption, 384, 890);
 
-      c.fillStyle = '#e8c4a0';
+      c.fillStyle = '#ad8b5d';
       c.font = '22px Georgia';
       c.fillText('✦  ♏  ✦', 384, 928);
     } else if (arch === 'seasons') {
@@ -398,7 +428,7 @@ function makePage(page, left, image) {
       c.font = '12px sans-serif';
       c.fillText('SPRING  ·  SUMMER  ·  AUTUMN  ·  WINTER', 384, 924);
     } else {
-      // Default / refined editorial gallery crop
+      // Refined editorial gallery crop
       const dx = 76, dy = 142, dw = 616, dh = 705;
       drawCoverImage(c, image, dx, dy, dw, dh);
 
@@ -424,275 +454,314 @@ function makePage(page, left, image) {
     if (arch === 'cover') {
       // Cover prologue / Frontispiece
       c.fillStyle = '#a77c83';
-      c.font = '40px Georgia';
+      c.font = '36px Georgia';
       c.textAlign = 'center';
-      c.fillText('✦', 384, 220);
+      c.fillText('✦', 384, 210);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 52px Georgia';
-      c.fillText('In her own', 384, 320);
-      c.fillText('little world', 384, 385);
+      c.font = 'italic 46px Georgia';
+      c.fillText('In her own', 384, 290);
+      c.fillText('little world', 384, 348);
 
       c.strokeStyle = '#d4c2ac';
       c.beginPath();
-      c.moveTo(260, 435);
-      c.lineTo(508, 435);
+      c.moveTo(260, 395);
+      c.lineTo(508, 395);
       c.stroke();
 
       c.fillStyle = '#49303f';
-      c.font = 'italic 30px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 520 + i * 50);
-      });
+      c.font = 'italic 24px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 465, 580, 38, 24);
+
+      c.strokeStyle = 'rgba(217, 194, 172, 0.45)';
+      c.beginPath();
+      c.moveTo(280, 650);
+      c.lineTo(488, 650);
+      c.stroke();
 
       c.fillStyle = '#8d787c';
       c.font = '22px sans-serif';
-      c.fillText(data.note, 384, 755);
-      c.fillText(data.end, 384, 792);
+      c.fillText(data.note, 384, 715);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 26px Georgia';
+      c.fillText(data.closing, 384, 765);
 
       c.fillStyle = '#ad8b5d';
-      c.font = 'italic 24px Georgia';
-      c.fillText('— 7 November · Made with love —', 384, 895);
+      c.font = 'italic 22px Georgia';
+      c.fillText('— 7 November · Made with love —', 384, 875);
     } else if (arch === 'journey') {
       // 6+ Years Journey spread with huge watermark numeral
       c.save();
       c.font = 'bold italic 260px Georgia';
       c.fillStyle = 'rgba(107, 74, 126, 0.055)';
       c.textAlign = 'center';
-      c.fillText('6+', 384, 570);
+      c.fillText(data.watermark || '6+', 384, 570);
       c.restore();
 
       c.fillStyle = '#9b7cc4';
       c.font = '13px sans-serif';
       c.textAlign = 'center';
-      c.fillText('CHAPTER 02 · 2018 — TODAY', 384, 210);
+      c.fillText('02 / SIX YEARS & COUNTING', 384, 195);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 46px Georgia';
-      c.fillText('Some stories', 384, 310);
-      c.fillText('keep unfolding', 384, 370);
+      c.font = 'italic 42px Georgia';
+      c.fillText('Finding our way', 384, 275);
+      c.fillText('through the years', 384, 330);
 
       c.strokeStyle = 'rgba(217, 194, 172, 0.6)';
       c.beginPath();
-      c.moveTo(240, 420); c.lineTo(528, 420);
+      c.moveTo(240, 375);
+      c.lineTo(528, 375);
       c.stroke();
 
       c.fillStyle = '#49303f';
-      c.font = 'italic 28px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 500 + i * 46);
-      });
+      c.font = 'italic 20.5px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 430, 580, 32, 16);
+
+      c.strokeStyle = 'rgba(217, 194, 172, 0.45)';
+      c.beginPath();
+      c.moveTo(280, 740);
+      c.lineTo(488, 740);
+      c.stroke();
 
       c.fillStyle = '#8d787c';
-      c.font = '21px sans-serif';
-      c.fillText(data.note, 384, 755);
-      c.fillText(data.end, 384, 792);
+      c.font = '19px sans-serif';
+      c.fillText(data.note, 384, 780);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 22px Georgia';
+      c.fillText(data.closing, 384, 820);
 
       c.fillStyle = '#a27a8e';
-      c.font = 'italic 24px Georgia';
-      c.fillText('— six years & counting —', 384, 892);
+      c.font = 'italic 22px Georgia';
+      c.fillText('— six years & counting —', 384, 890);
     } else if (arch === 'traits') {
-      // Personality Traits Layout
+      // Personality & Spirit layout
       c.fillStyle = '#b787b5';
-      c.font = '40px Georgia';
+      c.font = '36px Georgia';
       c.textAlign = 'center';
       c.fillText('♡', 384, 195);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 44px Georgia';
-      c.fillText('A little fire,', 384, 280);
-      c.fillText('a lot of heart', 384, 335);
+      c.font = 'italic 42px Georgia';
+      c.fillText('A little fire,', 384, 275);
+      c.fillText('a whole lot of heart', 384, 330);
 
-      // 3 Structured trait cards
-      const traits = [
-        { no: '01', title: 'KIND HEART', desc: 'A whole lot of kindness in her heart.' },
-        { no: '02', title: 'CUTE CHARM', desc: 'A spark that makes her unmistakably herself.' },
-        { no: '03', title: 'A LITTLE FIRE', desc: 'Strong-minded, spirited, and always true.' },
-      ];
+      c.strokeStyle = 'rgba(217, 194, 172, 0.55)';
+      c.beginPath();
+      c.moveTo(240, 375);
+      c.lineTo(528, 375);
+      c.stroke();
 
-      traits.forEach((t, i) => {
-        const ty = 410 + i * 110;
-        c.fillStyle = '#f5eef8';
-        c.fillRect(140, ty, 488, 86);
-        c.strokeStyle = 'rgba(201, 176, 232, 0.5)';
-        c.lineWidth = 1;
-        c.strokeRect(140, ty, 488, 86);
+      c.fillStyle = '#49303f';
+      c.font = 'italic 21px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 435, 580, 33, 20);
 
-        c.fillStyle = '#6b4a7e';
-        c.font = 'bold 13px sans-serif';
-        c.textAlign = 'left';
-        c.fillText(`${t.no} · ${t.title}`, 166, ty + 34);
-
-        c.fillStyle = '#49303f';
-        c.font = 'italic 21px Georgia';
-        c.fillText(t.desc, 166, ty + 64);
-      });
+      c.strokeStyle = 'rgba(217, 194, 172, 0.45)';
+      c.beginPath();
+      c.moveTo(280, 715);
+      c.lineTo(488, 715);
+      c.stroke();
 
       c.fillStyle = '#8d787c';
       c.font = '20px sans-serif';
-      c.textAlign = 'center';
-      c.fillText(data.note, 384, 785);
-      c.fillText(data.end, 384, 818);
+      c.fillText(data.note, 384, 760);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 23px Georgia';
+      c.fillText(data.closing, 384, 800);
 
       c.fillStyle = '#a27a8e';
-      c.font = 'italic 24px Georgia';
-      c.fillText('— so uniquely you —', 384, 895);
+      c.font = 'italic 22px Georgia';
+      c.fillText('— so uniquely you —', 384, 890);
     } else if (arch === 'scorpio') {
-      // Scorpio celestial spread
-      c.fillStyle = '#e8c4a0';
-      c.font = '54px Georgia';
+      // Scorpio celestial spread (light & elegant aesthetic)
+      c.fillStyle = '#ad8b5d';
+      c.font = '46px Georgia';
       c.textAlign = 'center';
-      c.fillText('♏', 384, 215);
+      c.fillText('♏', 384, 195);
 
-      c.fillStyle = '#f5eaff';
-      c.font = 'italic 46px Georgia';
-      c.fillText('A Scorpio kind', 384, 310);
-      c.fillText('of magic', 384, 370);
+      c.fillStyle = '#2d1f3d';
+      c.font = 'italic 42px Georgia';
+      c.fillText('A little November', 384, 275);
+      c.fillText('magic', 384, 330);
 
-      c.strokeStyle = 'rgba(212, 160, 200, 0.35)';
+      c.strokeStyle = 'rgba(107, 74, 126, 0.25)';
       c.beginPath();
-      c.moveTo(220, 420); c.lineTo(548, 420);
+      c.moveTo(240, 375);
+      c.lineTo(528, 375);
       c.stroke();
 
-      c.fillStyle = '#e8d5f5';
-      c.font = 'italic 29px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 505 + i * 48);
-      });
+      c.fillStyle = '#49303f';
+      c.font = 'italic 20.5px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 430, 580, 32, 16);
 
-      c.fillStyle = '#c9b0e8';
-      c.font = '21px sans-serif';
-      c.fillText('Born 7 November', 384, 765);
-      c.fillText(data.end, 384, 802);
+      c.strokeStyle = 'rgba(107, 74, 126, 0.2)';
+      c.beginPath();
+      c.moveTo(280, 735);
+      c.lineTo(488, 735);
+      c.stroke();
 
-      c.fillStyle = '#e8c4a0';
-      c.font = 'italic 25px Georgia';
-      c.fillText('✦  A date worth remembering  ✦', 384, 895);
+      c.fillStyle = '#6b4a7e';
+      c.font = '20px sans-serif';
+      c.fillText(data.note, 384, 775);
+
+      c.fillStyle = '#49303f';
+      c.font = 'italic 22px Georgia';
+      c.fillText(data.closing, 384, 815);
+
+      c.fillStyle = '#ad8b5d';
+      c.font = 'italic 22px Georgia';
+      c.fillText('✦  A date worth remembering  ✦', 384, 890);
     } else if (arch === 'stationery') {
       // Inset letter parchment
       c.strokeStyle = 'rgba(200, 170, 150, 0.4)';
       c.lineWidth = 1.5;
-      c.strokeRect(100, 140, 568, 720);
+      c.strokeRect(96, 135, 576, 730);
 
-      c.fillStyle = '#b787b5';
-      c.font = '40px Georgia';
+      c.fillStyle = '#9b7cc4';
+      c.font = '36px Georgia';
       c.textAlign = 'center';
-      c.fillText('✉', 384, 215);
+      c.fillText('✉', 384, 195);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 46px Georgia';
-      c.fillText('A little note for you', 384, 310);
+      c.font = 'italic 40px Georgia';
+      c.fillText('What I truly wish for you', 384, 268);
 
       c.strokeStyle = 'rgba(217, 194, 172, 0.5)';
       c.beginPath();
-      c.moveTo(240, 365); c.lineTo(528, 365);
+      c.moveTo(240, 312);
+      c.lineTo(528, 312);
       c.stroke();
 
       c.fillStyle = '#49303f';
-      c.font = 'italic 28px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 465 + i * 48);
-      });
+      c.font = 'italic 19px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 360, 560, 29, 14);
+
+      c.strokeStyle = 'rgba(217, 194, 172, 0.45)';
+      c.beginPath();
+      c.moveTo(280, 725);
+      c.lineTo(488, 725);
+      c.stroke();
 
       c.fillStyle = '#8d787c';
-      c.font = '21px sans-serif';
-      c.fillText(data.note, 384, 720);
-      c.fillText(data.end, 384, 755);
+      c.font = '19px sans-serif';
+      c.fillText(data.note, 384, 762);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 22px Georgia';
+      c.fillText(data.closing, 384, 798);
 
       c.fillStyle = '#ad8b5d';
-      c.font = 'italic 25px Georgia';
-      c.fillText('— with gratitude & warmth —', 384, 825);
+      c.font = 'italic 21px Georgia';
+      c.fillText('— wishing you the very best, always —', 384, 840);
     } else if (arch === 'finale') {
       // Commemorative Finale
       c.fillStyle = '#e8c4a0';
-      c.font = '40px Georgia';
+      c.font = '36px Georgia';
       c.textAlign = 'center';
-      c.fillText('✦', 384, 205);
+      c.fillText('✦', 384, 190);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 46px Georgia';
-      c.fillText('Wherever life', 384, 295);
-      c.fillText('takes you', 384, 355);
+      c.font = 'italic 42px Georgia';
+      c.fillText('Today is all', 384, 260);
+      c.fillText('about you', 384, 312);
 
       c.strokeStyle = 'rgba(217, 194, 172, 0.6)';
       c.beginPath();
-      c.moveTo(220, 405); c.lineTo(548, 405);
+      c.moveTo(240, 350);
+      c.lineTo(528, 350);
       c.stroke();
 
       c.fillStyle = '#49303f';
-      c.font = 'italic 29px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 485 + i * 48);
-      });
+      c.font = 'italic 19.5px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 395, 580, 30, 14);
 
       // Commemorative Seal
       c.beginPath();
-      c.arc(384, 755, 68, 0, Math.PI * 2);
-      c.fillStyle = 'rgba(245, 235, 220, 0.8)';
+      c.arc(384, 720, 48, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(245, 235, 220, 0.85)';
       c.fill();
       c.strokeStyle = 'rgba(217, 185, 120, 0.7)';
-      c.lineWidth = 2;
+      c.lineWidth = 1.5;
       c.stroke();
 
       c.fillStyle = '#6b4a7e';
-      c.font = 'bold 11px sans-serif';
-      c.fillText('CELEBRATING AMINA', 384, 745);
-      c.font = '10px sans-serif';
+      c.font = 'bold 10px sans-serif';
+      c.fillText('CELEBRATING AMINA', 384, 714);
+      c.font = '9px sans-serif';
       c.fillStyle = '#8b6a7a';
-      c.fillText('ALWAYS IN YOUR CORNER', 384, 768);
+      c.fillText('HAPPY BIRTHDAY', 384, 730);
+
+      c.fillStyle = '#8d787c';
+      c.font = '19px sans-serif';
+      c.fillText(data.note, 384, 805);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 22px Georgia';
+      c.fillText(data.closing, 384, 842);
 
       c.fillStyle = '#ad8b5d';
-      c.font = 'italic 25px Georgia';
+      c.font = 'italic 22px Georgia';
       c.fillText('— Happy Birthday, Amina ♡ —', 384, 895);
     } else {
-      // Default refined layout
+      // Default refined layout (Polaroid, Candid, Seasons, Horizon)
       c.fillStyle = '#b787b5';
-      c.font = '48px Georgia';
+      c.font = '36px Georgia';
       c.textAlign = 'center';
-      c.fillText('♡', 384, 235);
+      c.fillText('♡', 384, 195);
 
       c.fillStyle = '#2d1f3d';
-      c.font = 'italic 46px Georgia';
+      c.font = 'italic 40px Georgia';
       const words = data.title.split(' ');
       const split = Math.ceil(words.length / 2);
       if (words.length > 3) {
-        c.fillText(words.slice(0, split).join(' '), 384, 345);
-        c.fillText(words.slice(split).join(' '), 384, 405);
+        c.fillText(words.slice(0, split).join(' '), 384, 275);
+        c.fillText(words.slice(split).join(' '), 384, 328);
       } else {
-        c.fillText(data.title, 384, 370);
+        c.fillText(data.title, 384, 300);
       }
 
       c.strokeStyle = 'rgba(217, 194, 172, 0.5)';
       c.beginPath();
-      c.moveTo(220, 450); c.lineTo(548, 450);
+      c.moveTo(240, 365);
+      c.lineTo(528, 365);
       c.stroke();
 
       c.fillStyle = '#49303f';
-      c.font = 'italic 29px Georgia';
-      data.lines.forEach((line, i) => {
-        c.fillText(line, 384, 520 + i * 46);
-      });
+      c.font = 'italic 20.5px Georgia';
+      drawParagraphs(c, data.paragraphs, 384, 420, 580, 32, 16);
+
+      c.strokeStyle = 'rgba(217, 194, 172, 0.45)';
+      c.beginPath();
+      c.moveTo(280, 735);
+      c.lineTo(488, 735);
+      c.stroke();
 
       c.fillStyle = '#8d787c';
-      c.font = '21px sans-serif';
-      c.fillText(data.note, 384, 760);
-      c.fillText(data.end, 384, 796);
+      c.font = '19.5px sans-serif';
+      c.fillText(data.note, 384, 780);
+
+      c.fillStyle = '#6b4a7e';
+      c.font = 'italic 23px Georgia';
+      c.fillText(data.closing, 384, 820);
 
       c.fillStyle = '#a27a8e';
-      c.font = 'italic 25px Georgia';
-      c.fillText('— with love & warmth —', 384, 895);
+      c.font = 'italic 22px Georgia';
+      c.fillText('— with love & warmth —', 384, 890);
     }
   }
 
   // 3. Page numbering at bottom
-  c.fillStyle = isScorpio ? '#bca5d4' : '#8b6a7a';
+  c.fillStyle = isScorpio ? '#6b4a7e' : '#8b6a7a';
   c.font = '16px sans-serif';
   c.textAlign = 'center';
   c.fillText(String(page * 2 + (left ? 1 : 2)).padStart(2, '0'), 384, 980);
 
   const t = new THREE.CanvasTexture(canvas);
   t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
+  t.anisotropy = 16;
   return t;
 }
 
@@ -806,3 +875,7 @@ export default function MagazineScene({ page, turn, onTurnDone, reduced }) {
     </group>
   );
 }
+
+try {
+  useTexture.preload(Object.values(magazinePhotoSlots));
+} catch (_) {}

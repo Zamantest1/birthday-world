@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { Glow, Motes, ParticleField } from './three-utils.jsx';
@@ -22,28 +22,41 @@ export const LETTER_COPY = {
   heading: 'Dear Amina,',
   paragraphs: [
     'Happy Birthday.',
-    'More than six years is a long time to share with someone. We have lived through so many moments—some bright and easy, others quiet and heavy. There were times when the road felt uncertain, and times when we were not sure where we stood. Yet somehow, through all of it, we kept finding our way back to each other.',
-    'Whatever choices come next, and wherever our paths may lead, I want you to know how deeply grateful I am for the time we have shared. You have given this part of my life meaning, warmth, and memories that I will always hold close.',
-    'I hope this year brings you peace, gentle days, and every opportunity to build the life you deserve. Never lose that kind heart, that cute little charm, or the fiery spark that makes you who you are.',
-    'Happy Birthday, Amina. I wish you nothing but the best, always.',
+    'It feels a little strange to think that we have known each other for more than six years. That is a lot of time, a lot of growing up, and a lot of life lived along the way.',
+    'We have had good days and difficult ones. There have been times when things felt easy, and times when we struggled to understand each other or figure out what came next. We have not always had everything worked out, but the time we have shared has meant a great deal to me.',
+    'I wanted to make something for your birthday that was just for you. Not because everything in life needs to be perfect or because we need to have every answer right now, but because your birthday deserves to be celebrated, and I genuinely wanted you to feel special.',
+    'One thing I truly hope you know is that I want good things for you. I hope your hard work takes you somewhere you are proud of. I hope you find peace in your decisions, confidence in yourself, and happiness in the life you build. I hope you keep your kind heart, your cute little charm, and that stubborn, fiery side that makes you so unmistakably you.',
+    'There may be things we still need to figure out as life moves forward. We do not have to put all those questions into today. Today is your birthday, and I hope you can enjoy it for what it is: another year of your life, another chance to grow, and another reason to celebrate the person you are.',
+    'Thank you for the time we have shared and for the place you have had in my life. I will always treat that part of my story with care and respect.',
+    'For this new year of your life, I wish you happiness that feels genuine, success that you can be proud of, good health, peaceful days, and plenty of reasons to smile.',
+    'Happy Birthday, Amina. I hope today is kind to you, and I hope the year ahead brings you many beautiful things.',
   ],
-  closing: 'With warmth, respect, and care, always.',
+  closing: 'With warmth, care, and respect.',
 };
 
-function Letter({ visible, reduced, mobile }) {
+function Letter({ progressRef, reduced, mobile }) {
   const group = useRef();
   const texture = useMemo(() => {
-    const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 1600;
+    const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 1650;
     const c = canvas.getContext('2d');
-    const grad = c.createLinearGradient(0, 0, 1200, 1600);
-    grad.addColorStop(0, '#fbf7ff'); grad.addColorStop(.55, '#fff9f5'); grad.addColorStop(1, '#f5e9f8');
-    c.fillStyle = grad; c.fillRect(0, 0, 1200, 1600);
-    for (let i = 0; i < 4200; i++) { c.fillStyle = `rgba(117,64,82,${(i % 4) * .009})`; c.fillRect((i * 71) % 1200, (i * 137) % 1600, 2, 2); }
-    c.strokeStyle = '#d99ab1'; c.lineWidth = 6; c.strokeRect(48, 48, 1104, 1504);
-    c.strokeStyle = '#ead0d4'; c.lineWidth = 2; c.strokeRect(68, 68, 1064, 1464);
-    c.textAlign = 'center'; c.fillStyle = '#9b7cc4'; c.font = '60px Georgia'; c.fillText('♡', 600, 155);
-    c.fillStyle = '#6b4a7e'; c.font = 'italic 58px Georgia'; c.fillText(LETTER_COPY.heading, 600, 245);
-    c.fillStyle = '#4a3060'; c.font = '34px Georgia';
+    const grad = c.createLinearGradient(0, 0, 1200, 1650);
+    grad.addColorStop(0, '#fdfaf6'); grad.addColorStop(.55, '#fef8f4'); grad.addColorStop(1, '#f8eff5');
+    c.fillStyle = grad; c.fillRect(0, 0, 1200, 1650);
+    for (let i = 0; i < 4000; i++) { c.fillStyle = `rgba(107,74,126,${(i % 4) * .007})`; c.fillRect((i * 71) % 1200, (i * 137) % 1650, 2, 2); }
+
+    // Double border: gold outer, lilac inner
+    c.strokeStyle = '#d8b56d'; c.lineWidth = 4; c.strokeRect(44, 44, 1112, 1562);
+    c.strokeStyle = '#c9b0e8'; c.lineWidth = 1.5; c.strokeRect(56, 56, 1088, 1538);
+
+    // Heart motif & Header
+    c.textAlign = 'center';
+    c.fillStyle = '#9b7cc4'; c.font = '36px Georgia'; c.fillText('♡', 600, 115);
+    c.fillStyle = '#6b4a7e'; c.font = 'italic 46px Georgia'; c.fillText(LETTER_COPY.heading, 600, 172);
+    c.fillStyle = '#d8b56d'; c.fillRect(520, 196, 160, 1.5);
+
+    // Paragraph wrapping with 20.5px Georgia and 31px line-height
+    c.fillStyle = '#3a2245';
+    c.font = 'italic 20.5px Georgia';
     const wrap = (text, maxWidth) => {
       const words = text.split(/\s+/); const lines = []; let line = '';
       for (const word of words) {
@@ -52,73 +65,102 @@ function Letter({ visible, reduced, mobile }) {
       }
       if (line) lines.push(line); return lines;
     };
-    let y = 370;
+
+    let y = 248;
     for (const paragraph of LETTER_COPY.paragraphs) {
-      const lines = wrap(paragraph, 840);
-      for (const line of lines) { c.fillText(line, 600, y); y += 45; }
-      y += 24;
+      const lines = wrap(paragraph, 940);
+      for (const line of lines) { c.fillText(line, 600, y); y += 31; }
+      y += 12;
     }
-    c.fillStyle = '#c27d96'; c.fillRect(520, y + 6, 160, 3); y += 64;
-    c.fillStyle = '#6b4a7e'; c.font = 'italic 38px Georgia';
-    c.fillText(LETTER_COPY.closing, 600, Math.min(y + 12, 1450));
-    c.fillStyle = '#b98a9d'; c.font = '32px Georgia';
-    c.fillText('♡', 600, 1485);
-    const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+
+    // Signoff & Closing
+    c.fillStyle = '#c9b0e8'; c.fillRect(520, y + 6, 160, 1.5);
+    y += 46;
+    c.fillStyle = '#6b4a7e'; c.font = 'italic 30px Georgia';
+    c.fillText(LETTER_COPY.closing, 600, y);
+    c.fillStyle = '#9b7cc4'; c.font = '28px Georgia';
+    c.fillText('♡', 600, y + 42);
+
+    const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
 
-  useFrame((state, dt) => {
+  useFrame((state) => {
     if (!group.current) return;
-    const current = group.current.userData.progress ?? 0;
-    const next = THREE.MathUtils.damp(current, visible ? 1 : 0, reduced ? 12 : 1.4, dt);
-    group.current.userData.progress = next;
-
-    const rise = smooth(0.25, 0.95, next);
+    const p = progressRef.current;
+    const rise = smooth(0.48, 0.96, p);
     group.current.visible = rise > 0.001;
     if (rise <= 0.001) return;
 
-    const targetY = mobile ? 2.05 : 1.82;
-    const targetZ = mobile ? 1.65 : 1.50;
-    const targetScale = mobile ? 0.82 : 0.90;
+    const targetY = mobile ? 1.50 : 1.68;
+    const targetZ = mobile ? 1.20 : 1.35;
+    const targetScale = mobile ? 0.67 : 0.82;
 
-    group.current.position.y = 0.20 + rise * (targetY - 0.20);
-    group.current.position.z = 0.15 + rise * (targetZ - 0.15);
-    group.current.rotation.x = -0.68 + rise * 0.54;
+    group.current.position.y = 0.35 + rise * (targetY - 0.35);
+    group.current.position.z = 0.05 + rise * (targetZ - 0.05);
+    group.current.rotation.x = -0.55 + rise * 0.55;
     group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.35) * 0.008;
-    group.current.scale.setScalar(0.25 + rise * (targetScale - 0.25));
+    group.current.scale.setScalar(0.20 + rise * (targetScale - 0.20));
   });
 
   return (
-    <group ref={group} position={[0, 0.18, 0.12]} visible={false}>
-      <mesh position={[0, 0, 0.013]} castShadow receiveShadow>
-        <planeGeometry args={[2.04, 2.72]} />
-        <meshStandardMaterial map={texture} roughness={0.92} metalness={0} />
-      </mesh>
+    <group ref={group} position={[0, 0.35, 0.05]} visible={false}>
+      {/* Backing paper card substrate */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[2.08, 2.76, 0.024]} />
-        <meshStandardMaterial color="#f0dce6" roughness={0.92} />
+        <boxGeometry args={[2.08, 2.86, 0.024]} />
+        <meshStandardMaterial color="#f8edf4" roughness={0.92} />
+      </mesh>
+      {/* Front letter printed surface with polygonOffset to prevent any flicker */}
+      <mesh position={[0, 0, 0.016]} receiveShadow>
+        <planeGeometry args={[2.04, 2.82]} />
+        <meshStandardMaterial
+          map={texture}
+          roughness={0.92}
+          metalness={0}
+          polygonOffset
+          polygonOffsetFactor={-2}
+        />
       </mesh>
     </group>
   );
 }
 
 export default function GiftScene({ open, reduced, mobile }) {
-  const box = useRef(); const lid = useRef(); const bow = useRef(); const light = useRef(); const glow = useRef(); const progress = useRef(0);
+  const box = useRef();
+  const lid = useRef();
+  const bow = useRef();
+  const light = useRef();
+  const glow = useRef();
+  const progress = useRef(0);
+
   useFrame((state, dt) => {
     if (!box.current || !lid.current || !bow.current || !light.current || !glow.current) return;
-    progress.current = open ? Math.min(1, progress.current + dt / (reduced ? .3 : 3.2)) : Math.max(0, progress.current - dt / 1.2);
-    const p = progress.current; const t = state.clock.elapsedTime;
-    box.current.position.y = reduced ? 0 : Math.sin(t * .9) * .025;
-    box.current.rotation.y = -.42 + (reduced ? 0 : Math.sin(t * .35) * .05) + smooth(0, .5, p) * .3;
-    const wobble = (1 - smooth(.05, .28, p)) * smooth(0, .05, p);
-    bow.current.scale.setScalar(1 + Math.sin(p * 60) * .08 * wobble);
-    bow.current.rotation.z = Math.sin(p * 40) * .12 * wobble;
-    lid.current.rotation.x = -smooth(.22, .72, p) * 1.95;
-    lid.current.position.y = H + smooth(.18, .32, p) * .05;
-    light.current.intensity = smooth(.35, .8, p) * 9;
-    glow.current.material.opacity = smooth(.35, .85, p) * .9;
+    progress.current = open
+      ? Math.min(1, progress.current + dt / (reduced ? 0.3 : 2.4))
+      : Math.max(0, progress.current - dt / 1.0);
+    const p = progress.current;
+    const t = state.clock.elapsedTime;
+
+    // Box gentle hovering without sudden twist
+    box.current.position.y = reduced ? 0 : Math.sin(t * 0.9) * 0.025;
+    box.current.rotation.y = -0.22 + (reduced ? 0 : Math.sin(t * 0.35) * 0.03);
+
+    // 1. Bow unlocks & wobbles subtly during initial opening
+    const wobble = (1 - smooth(0.04, 0.22, p)) * smooth(0, 0.04, p);
+    bow.current.scale.setScalar(1 + Math.sin(p * 50) * 0.08 * wobble);
+    bow.current.rotation.z = Math.sin(p * 35) * 0.12 * wobble;
+
+    // 2. Gift Box Top Lid opens wide backward cleanly!
+    lid.current.position.y = H + smooth(0.12, 0.28, p) * 0.22;
+    lid.current.position.z = (-W / 2 - 0.04) - smooth(0.18, 0.48, p) * 0.14;
+    lid.current.rotation.x = -smooth(0.15, 0.48, p) * 2.15; // ~123 degrees swing open!
+
+    // 3. Inside of box lights up with glowing birthday radiance!
+    light.current.intensity = smooth(0.24, 0.54, p) * 20;
+    glow.current.material.opacity = smooth(0.26, 0.58, p) * 0.95;
   });
-  return <group position={[0, -.6, 0]}>
+
+  return <group position={[0, -0.6, 0]}>
     <spotLight position={[2.5, 5, 3.5]} angle={.42} penumbra={.9} intensity={60} color="#f6e8d6" castShadow shadow-mapSize={mobile ? 512 : 1024} shadow-bias={-.0004} />
     <spotLight position={[-3, 2.5, -3]} angle={.6} penumbra={1} intensity={35} color="#d58ba8" />
     <pointLight position={[-2, 1, 2]} intensity={4} color="#d8b56d" distance={6} />
@@ -150,6 +192,6 @@ export default function GiftScene({ open, reduced, mobile }) {
       </group>
       <Motes active={open} mode="loop" origin={[0, H - .1, 0]} spread={.45} height={2.6} count={mobile ? 50 : 110} speed={.6} size={.05} />
     </group>
-    <Letter visible={open} reduced={reduced} mobile={mobile} />
+    <Letter progressRef={progress} reduced={reduced} mobile={mobile} />
   </group>;
 }

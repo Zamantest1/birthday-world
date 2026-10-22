@@ -10,17 +10,37 @@ import { Glow, Motes, ParticleField } from './three-utils.jsx';
 
 const BACKGROUNDS = ['#20152b', '#2c1b35', '#241731', '#21152d'];
 
-function shotFor({ scene, candleOut, sliceServed, turn, giftOpen }) {
+const gyro = { current: { x: 0, y: 0, active: false } };
+if (typeof window !== 'undefined') {
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.gamma != null && e.beta != null) {
+      gyro.current.active = true;
+      gyro.current.x = THREE.MathUtils.clamp(e.gamma / 30, -1, 1);
+      gyro.current.y = THREE.MathUtils.clamp((e.beta - 45) / 30, -1, 1);
+    }
+  }, { passive: true });
+}
+
+function shotFor({ scene, candleOut, sliceServed, turn, giftOpen }, mobile = false) {
   if (scene === 0) return { pos: [0, 0, 7.4], look: [0, 0, 0], k: 1.25 };
   if (scene === 1) {
     if (sliceServed) return { pos: [-.4, 2.3, 5.2], look: [-.75, .1, .7], k: 1.7 };
     return candleOut ? { pos: [1.5, 2.15, 4.9], look: [0, .45, 0], k: 1.7 } : { pos: [2.1, 2.45, 5.4], look: [0, .45, 0], k: 1.7 };
   }
-  if (scene === 2) return turn ? { pos: [0, 1.85, 4.15], look: [0, .05, 0], k: 1.95 } : { pos: [0, 1.7, 4.3], look: [0, 0, 0], k: 1.95 };
+  if (scene === 2) {
+    if (mobile) {
+      return turn
+        ? { pos: [0, 1.40, 5.15], look: [0, -0.05, 0], k: 1.95 }
+        : { pos: [0, 1.35, 5.25], look: [0, -0.06, 0], k: 1.95 };
+    }
+    return turn
+      ? { pos: [0, 1.75, 4.25], look: [0, -0.05, 0], k: 1.95 }
+      : { pos: [0, 1.65, 4.35], look: [0, -0.1, 0], k: 1.95 };
+  }
   return giftOpen ? { pos: [0, 1.9, 4.7], look: [0, 1.3, 0], k: 1.35 } : { pos: [.6, 1.5, 5.4], look: [0, .35, 0], k: 1.6 };
 }
 
-function CameraRig({ state, reduced }) {
+function CameraRig({ state, reduced, mobile, controlsRef }) {
   const { camera, size } = useThree();
   const look = useRef(new THREE.Vector3());
   const target = useRef(new THREE.Vector3());
@@ -28,17 +48,36 @@ function CameraRig({ state, reduced }) {
   const first = useRef(true);
 
   useEffect(() => {
-    const shot = shotFor(state);
-    const entry = new THREE.Vector3(...shot.pos).sub(new THREE.Vector3(...shot.look)).multiplyScalar(reduced ? 1 : 1.55);
-    camera.position.copy(new THREE.Vector3(...shot.look).add(entry)).add(new THREE.Vector3(0, reduced ? 0 : .6, 0));
-    look.current.set(...shot.look).add(new THREE.Vector3(0, reduced ? 0 : .4, 0));
+    const shot = shotFor(state, mobile);
+    if (state.scene === 1 || state.scene === 2) {
+      // In interactive 3D Orbit scenes (Cake and Magazine), align camera and controls directly
+      camera.position.set(...shot.pos);
+      look.current.set(...shot.look);
+      camera.lookAt(look.current);
+      if (controlsRef?.current) {
+        controlsRef.current.target.set(...shot.look);
+        controlsRef.current.update();
+      }
+    } else {
+      // In cinematic scenes (Hero, Gift), set smooth entry
+      const entry = new THREE.Vector3(...shot.pos).sub(new THREE.Vector3(...shot.look)).multiplyScalar(reduced ? 1 : 1.35);
+      camera.position.copy(new THREE.Vector3(...shot.look).add(entry)).add(new THREE.Vector3(0, reduced ? 0 : 0.4, 0));
+      look.current.set(...shot.look);
+      camera.lookAt(look.current);
+    }
     first.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.scene]);
+  }, [state.scene, camera, controlsRef, mobile, reduced]);
 
   useFrame((three, dt) => {
-    if (state.scene === 1) return;
-    const shot = shotFor(state);
+    if (state.scene === 1 || state.scene === 2) {
+      if (state.scene === 1 && state.sliceServed && controlsRef?.current) {
+        const sliceTarget = new THREE.Vector3(-.75, .1, .7);
+        controlsRef.current.target.lerp(sliceTarget, 1 - Math.exp(-dt * 2.2));
+        controlsRef.current.update();
+      }
+      return;
+    }
+    const shot = shotFor(state, mobile);
     const aspect = size.width / size.height;
     const fit = aspect < 1 ? THREE.MathUtils.clamp(shot.k / Math.max(aspect, .42) * .5, 1, shot.k) : aspect < 1.25 ? 1.15 : 1;
     lookTarget.current.set(...shot.look);
@@ -90,33 +129,59 @@ function CakeStage({ candleOut, sliceServed, reduced, mobile }) {
 
 export default function World({ state, reduced, mobile, onTurnDone }) {
   const { scene } = state;
+  const controlsRef = useRef();
+
   return <>
     <Background scene={scene} />
-    <CameraRig state={state} reduced={reduced} />
-    <OrbitControls makeDefault enabled={scene === 1} enablePan={false} enableDamping dampingFactor={0.085} rotateSpeed={mobile ? 0.8 : 0.65} zoomSpeed={0.7} minDistance={3.6} maxDistance={8} minPolarAngle={Math.PI / 3.4} maxPolarAngle={Math.PI * 0.78} />
+    <CameraRig state={state} reduced={reduced} mobile={mobile} controlsRef={controlsRef} />
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enabled={scene === 1 || scene === 2}
+      enablePan={scene === 2}
+      screenSpacePanning={true}
+      enableZoom={true}
+      enableRotate={true}
+      enableDamping
+      dampingFactor={0.085}
+      rotateSpeed={mobile ? 0.75 : 0.65}
+      zoomSpeed={scene === 2 ? 0.85 : 0.7}
+      panSpeed={mobile ? 0.85 : 0.65}
+      minDistance={scene === 2 ? (mobile ? 0.8 : 1.4) : 3.0}
+      maxDistance={scene === 2 ? (mobile ? 10.0 : 7.0) : 8.5}
+      minPolarAngle={scene === 2 ? Math.PI / 6 : Math.PI / 3.4}
+      maxPolarAngle={scene === 2 ? Math.PI * 0.62 : Math.PI * 0.78}
+    />
     <ambientLight intensity={.18} color="#f0d8e2" />
     <Environment resolution={128} frames={1}>
       <Lightformer form="rect" intensity={1.4} color="#f6f0e8" position={[3, 4, 3]} scale={[4, 2, 1]} />
       <Lightformer form="rect" intensity={.8} color="#ce8eaa" position={[-4, 2, -3]} scale={[4, 3, 1]} />
       <Lightformer form="ring" intensity={1} color="#d8b56d" position={[0, 3, -4]} scale={2} />
     </Environment>
-    {scene === 0 && <HeroScene reduced={reduced} mobile={mobile} />}
-    {scene === 1 && <CakeStage candleOut={state.candleOut} sliceServed={state.sliceServed} reduced={reduced} mobile={mobile} />}
+    <group visible={scene === 0}><HeroScene reduced={reduced} mobile={mobile} /></group>
+    <group visible={scene === 1}><CakeStage candleOut={state.candleOut} sliceServed={state.sliceServed} reduced={reduced} mobile={mobile} /></group>
     {scene === 2 && <Suspense fallback={null}>
       <spotLight position={[1.5, 5, 3]} angle={.5} penumbra={.9} intensity={45} color="#fbefe0" castShadow shadow-mapSize={1024} shadow-bias={-.0004} />
       <spotLight position={[-3, 2, -2]} angle={.6} penumbra={1} intensity={20} color="#9b7cc4" />
       <Glow color="#75415e" scale={7} opacity={.5} position={[0, 0, -2.5]} />
       <ParticleField count={mobile ? 80 : 160} inner={3} outer={10} size={.05} color="#e8c77f" opacity={.4} drift={reduced ? 0 : .006} seed={7} />
-      <Floating reduced={reduced}><MagazineScene page={state.page} turn={state.turn} onTurnDone={onTurnDone} reduced={reduced} /></Floating>
-      <ContactShadows position={[0, -1.255, 0]} scale={mobile ? 4.2 : 5} blur={0.9} opacity={0.78} far={1.2} color="#08030d" />
-      <ContactShadows position={[0, -1.25, 0]} scale={mobile ? 7 : 8.5} blur={2.8} opacity={0.42} far={2.5} color="#1a0d24" />
+      <Floating reduced={reduced} scale={mobile ? 0.50 : 1.0}>
+        <MagazineScene page={state.page} turn={state.turn} onTurnDone={onTurnDone} reduced={reduced} />
+      </Floating>
+      <ContactShadows position={[0, mobile ? -0.68 : -1.255, 0]} scale={mobile ? 2.8 : 5} blur={0.9} opacity={0.78} far={1.2} color="#08030d" />
+      <ContactShadows position={[0, mobile ? -0.67 : -1.25, 0]} scale={mobile ? 4.8 : 8.5} blur={2.8} opacity={0.42} far={2.5} color="#1a0d24" />
     </Suspense>}
     {scene === 3 && <GiftScene open={state.giftOpen} reduced={reduced} mobile={mobile} />}
   </>;
 }
 
-function Floating({ children, reduced }) {
+function Floating({ children, reduced, scale = 1 }) {
   const ref = useRef();
-  useFrame((s) => { if (!reduced) { ref.current.position.y = Math.sin(s.clock.elapsedTime * .7) * .04; ref.current.rotation.z = Math.sin(s.clock.elapsedTime * .4) * .01; } });
-  return <group ref={ref}>{children}</group>;
+  useFrame((s) => {
+    if (!reduced && ref.current) {
+      ref.current.position.y = Math.sin(s.clock.elapsedTime * .7) * .04;
+      ref.current.rotation.z = Math.sin(s.clock.elapsedTime * .4) * .01;
+    }
+  });
+  return <group ref={ref} scale={scale}>{children}</group>;
 }
