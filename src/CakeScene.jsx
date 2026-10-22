@@ -71,7 +71,9 @@ function Candle({ blownOut, reduced }) {
     const scale = blownOut ? Math.max(0, 1 - elapsed.current * 2) : 1;
     flame.current.scale.set(.065 * scale, (.16 + (reduced ? 0 : Math.sin(t * 16) * .014)) * scale, .065 * scale);
     flame.current.rotation.z = blownOut ? -elapsed.current * 1.5 : Math.sin(t * 7) * .09;
-    light.current.intensity = scale * 2.5;
+    const flicker = Math.sin(t * 18) * 0.18 + Math.sin(t * 29) * 0.10 + (Math.sin(t * 7) * 0.06);
+    light.current.intensity = scale * (2.8 + (reduced ? 0 : flicker));
+    light.current.position.set((reduced ? 0 : Math.sin(t * 11) * 0.02), 1.65, -.42 + (reduced ? 0 : Math.cos(t * 13) * 0.02));
     smoke.current.children.forEach((m, i) => { const age = elapsed.current - i * .16; m.visible = blownOut && age > 0 && age < 2.8; m.position.set(Math.sin(age * 3 + i) * .08, 1.6 + age * .33, -.42); m.scale.setScalar(.04 + age * .025); m.material.opacity = Math.max(0, .22 * (1 - age / 2.8)); });
   });
   return <>

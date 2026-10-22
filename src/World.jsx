@@ -45,8 +45,10 @@ function CameraRig({ state, reduced }) {
     target.current.set(...shot.pos).sub(lookTarget.current).multiplyScalar(fit).add(lookTarget.current);
     if (!reduced) {
       const t = three.clock.elapsedTime;
-      target.current.x += three.pointer.x * .22 + Math.sin(t * .21) * .07;
-      target.current.y += three.pointer.y * .13 + Math.sin(t * .17) * .04;
+      const px = gyro.current.active ? (three.pointer.x * 0.4 + gyro.current.x * 0.6) : three.pointer.x;
+      const py = gyro.current.active ? (three.pointer.y * 0.4 + gyro.current.y * 0.6) : three.pointer.y;
+      target.current.x += px * 0.28 + Math.sin(t * 0.21) * 0.07;
+      target.current.y += py * 0.16 + Math.sin(t * 0.17) * 0.04;
     }
     const speed = reduced ? 8 : 1.6;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, target.current.x, speed, dt);
@@ -78,7 +80,8 @@ function CakeStage({ candleOut, sliceServed, reduced, mobile }) {
     <Glow color="#d99ab1" scale={3.6} opacity={.18} position={[0, .3, -2.2]} />
     <mesh position={[0, -1.06, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[9, 64]} /><meshStandardMaterial color="#30202c" roughness={.92} /></mesh>
     <mesh position={[0, -1.055, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[2.1, 2.13, 128]} /><meshBasicMaterial color="#d8b56d" transparent opacity={.28} toneMapped={false} /></mesh>
-    <ContactShadows position={[0, -1.05, 0]} scale={8} blur={2.4} opacity={.65} far={2.5} color="#07040a" />
+    <ContactShadows position={[0, -1.055, 0]} scale={mobile ? 4.5 : 5.5} blur={0.8} opacity={0.82} far={1.5} color="#09040d" />
+    <ContactShadows position={[0, -1.05, 0]} scale={mobile ? 7.5 : 9} blur={2.6} opacity={0.45} far={3} color="#180b22" />
     <CakeScene blownOut={candleOut} sliceServed={sliceServed} reduced={reduced} />
     <Motes active={candleOut} origin={[0, 1.35, -.42]} spread={.2} height={1.8} count={mobile ? 26 : 46} speed={.55} size={.05} />
     <ParticleField count={mobile ? 90 : 200} inner={4} outer={12} size={.06} color="#e8c77f" opacity={.4} drift={reduced ? 0 : .008} seed={4} />
@@ -105,7 +108,8 @@ export default function World({ state, reduced, mobile, onTurnDone }) {
       <Glow color="#75415e" scale={7} opacity={.5} position={[0, 0, -2.5]} />
       <ParticleField count={mobile ? 80 : 160} inner={3} outer={10} size={.05} color="#e8c77f" opacity={.4} drift={reduced ? 0 : .006} seed={7} />
       <Floating reduced={reduced}><MagazineScene page={state.page} turn={state.turn} onTurnDone={onTurnDone} reduced={reduced} /></Floating>
-      <ContactShadows position={[0, -1.25, 0]} scale={7} blur={3} opacity={.55} far={2} color="#07040a" />
+      <ContactShadows position={[0, -1.255, 0]} scale={mobile ? 4.2 : 5} blur={0.9} opacity={0.78} far={1.2} color="#08030d" />
+      <ContactShadows position={[0, -1.25, 0]} scale={mobile ? 7 : 8.5} blur={2.8} opacity={0.42} far={2.5} color="#1a0d24" />
     </Suspense>}
     {scene === 3 && <GiftScene open={state.giftOpen} reduced={reduced} mobile={mobile} />}
   </>;

@@ -8,7 +8,7 @@ const W = 1.3; const H = 1; const T = .04;
 const smooth = (a, b, x) => { const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
 function Velvet(props) { return <meshPhysicalMaterial color="#6b4a7e" roughness={.85} sheen={1} sheenRoughness={.45} sheenColor="#c9b0e8" {...props} />; }
-function Satin(props) { return <meshPhysicalMaterial color="#e2c486" roughness={.32} metalness={.35} clearcoat={.6} clearcoatRoughness={.3} {...props} />; }
+function Satin(props) { return <meshPhysicalMaterial color="#e8c4a0" roughness={.22} metalness={.52} clearcoat={.85} clearcoatRoughness={.25} sheen={1} sheenColor="#f8d8b8" {...props} />; }
 
 function Bow({ bowRef }) {
   return <group ref={bowRef} position={[0, .21, W / 2 + .02]}>
@@ -128,7 +128,8 @@ export default function GiftScene({ open, reduced, mobile }) {
     <mesh position={[0, -.3, 0]} castShadow receiveShadow><cylinderGeometry args={[1.35, 1.45, .6, 96]} /><meshPhysicalMaterial color="#4f3358" roughness={.8} sheen={1} sheenColor="#8f74ad" /></mesh>
     <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.35, .018, 10, 128]} /><meshStandardMaterial color="#d8b56d" metalness={.9} roughness={.25} /></mesh>
     <mesh position={[0, -.6, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.45, .014, 10, 128]} /><meshStandardMaterial color="#d8b56d" metalness={.9} roughness={.3} /></mesh>
-    <ContactShadows position={[0, -.6, 0]} scale={7} blur={2.6} opacity={.7} far={2} color="#08050c" />
+    <ContactShadows position={[0, -.605, 0]} scale={mobile ? 4.5 : 5.2} blur={0.8} opacity={0.82} far={1.5} color="#09040d" />
+    <ContactShadows position={[0, -.6, 0]} scale={mobile ? 7.5 : 9} blur={2.8} opacity={0.45} far={3} color="#180b22" />
 
     <group ref={box}>
       <mesh position={[0, T / 2, 0]} castShadow receiveShadow><boxGeometry args={[W, T, W]} /><Velvet /></mesh>
